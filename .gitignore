@@ -1,3 +1,7 @@
+## This file is borrowed from https://gist.github.com/dedunumax/54e82214715e35439227
+## The file is modified as follows: a "FlashCards Project" section has been added at
+## the end, and additional files and folders to be ignored are included there.
+
 ##########################
 ## Java
 ##########################
@@ -64,3 +68,4 @@ nb-configuration.xml
 ## FlashCards Project
 ##########################
 users.txt
+userStates/
