@@ -32,21 +32,22 @@ public class User {
     }
 
     public void saveUserState() {
-        String filename = username + ".txt";
+        new File("userStates").mkdirs();
+        String filename = "userStates/" + username + ".txt";
         File userState = new File(filename);
         PrintWriter output;
         FlashCard[] flashcards;
-
+        
         try {
             output = new PrintWriter(filename);
 
-            for (Subject subject : subjects) {
-                output.println("Subject: " + subject.getTitle());
-                flashcards = subject.getFlashCards();
+            for (int i = 0; i < numSubjects; i++) {
+                output.println("Subject: " + subjects[i].getTitle());
+                flashcards = subjects[i].getFlashCards();
 
-                for (FlashCard flashcard : flashcards) {
-                    output.println(flashcard.getQuestion() + " #ANSW "
-                            + flashcard.getAnswer());
+                for (int j = 0; j < subjects[i].getNumFlashcards(); j++) {
+                    output.println(flashcards[j].getQuestion() + " #ANSW "
+                            + flashcards[j].getAnswer());
                 }
             }
             
@@ -58,7 +59,7 @@ public class User {
     }
     
     public void loadUserState() {
-        String filename = username + ".txt";
+        String filename = "userStates/" + username + ".txt";
         File userState = new File(filename);
         Scanner input;
         String inputLine;

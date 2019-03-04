@@ -13,6 +13,7 @@ public class ProgramDriver {
 
     public static void testProgramWithConsoleInterface() {
         User theUser = registerOrLogin();
+        theUser.saveUserState();
     }
 
     public static User registerOrLogin() {

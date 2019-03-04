@@ -27,5 +27,9 @@ public class Subject {
         flashcards[numFlashcards++] = new FlashCard(question, answer);
     }
     
+    public int getNumFlashcards() {
+        return numFlashcards;
+    }
+    
     
 }
