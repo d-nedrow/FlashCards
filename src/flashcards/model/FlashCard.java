@@ -7,7 +7,7 @@ package flashcards.model;
 public class FlashCard {
     private String question, answer;
     private int[] rightWrongHistory;
-    int numAttempts;
+    private int numAttempts;
     
     public FlashCard(String question, String answer) {
         this.question = question;

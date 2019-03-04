@@ -14,10 +14,72 @@ import java.util.logging.Logger;
 public class User {
 
     private String username, password;
+    private Subject[] subjects;
+    private int numSubjects;
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        subjects = new Subject[10];
+    }
+
+    public Subject[] getSubjects() {
+        return subjects;
+    }
+
+    public void addSubject(Subject subject) {
+        subjects[numSubjects++] = subject;
+    }
+
+    public void saveUserState() {
+        String filename = username + ".txt";
+        File userState = new File(filename);
+        PrintWriter output;
+        FlashCard[] flashcards;
+
+        try {
+            output = new PrintWriter(filename);
+
+            for (Subject subject : subjects) {
+                output.println("Subject: " + subject.getTitle());
+                flashcards = subject.getFlashCards();
+
+                for (FlashCard flashcard : flashcards) {
+                    output.println(flashcard.getQuestion() + " #ANSW "
+                            + flashcard.getAnswer());
+                }
+            }
+            
+            output.close();
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void loadUserState() {
+        String filename = username + ".txt";
+        File userState = new File(filename);
+        Scanner input;
+        String inputLine;
+        String[] questionAndAnswer;
+                
+        try {
+            input = new Scanner(userState);
+            while (input.hasNextLine()) {
+                inputLine = input.nextLine();
+                if (inputLine.startsWith("Subject: ")) {
+                    inputLine = inputLine.substring("Subject: ".length()); // ignore "Subject: "
+                    addSubject(new Subject(inputLine));
+                } else {
+                    questionAndAnswer = inputLine.split(" #ANSW ");
+                    subjects[numSubjects - 1].addFlashCard(questionAndAnswer[0]
+                            , questionAndAnswer[1]);
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static boolean isDuplicateUser(String potentialUsername) {
@@ -47,20 +109,11 @@ public class User {
 
     public boolean saveUsernameAndPassword() {
         File userList = new File("users.txt");
-        Scanner input;
         PrintWriter output;
         String oldFileContents = "";
 
         if (userList.exists()) {
-            try {
-                input = new Scanner(userList);
-
-                while (input.hasNextLine()) {
-                    oldFileContents += input.nextLine() + "\n";
-                }
-            } catch (FileNotFoundException ex) {
-                return false; // username, password not saved due to error
-            }
+            oldFileContents = getOldFileContents(userList);
         }
 
         try {
@@ -77,6 +130,7 @@ public class User {
     public static User login(String typedUsername, String typedPassword) {
         File userList = new File("users.txt");
         String[] usernamePasswordEntry;
+        User theUser;
 
         try {
             Scanner input = new Scanner(userList);
@@ -85,7 +139,9 @@ public class User {
                 usernamePasswordEntry = input.nextLine().split(" ");
                 if (typedUsername.equals(usernamePasswordEntry[0])) {
                     if (typedPassword.equals(usernamePasswordEntry[1])) {
-                        return new User(typedUsername, typedPassword);
+                        theUser = new User(typedUsername, typedPassword);
+                        theUser.loadUserState();
+                        return theUser;
                     }
                 }
             }
@@ -94,5 +150,25 @@ public class User {
         } catch (FileNotFoundException ex) {
             return null; // there are currently no registered users to login
         }
+    }
+
+    public static String getOldFileContents(File file) {
+        Scanner input;
+        String oldFileContents = "";
+
+        try {
+            input = new Scanner(file);
+
+            while (input.hasNextLine()) {
+                oldFileContents += input.nextLine() + "\n";
+            }
+
+            input.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return oldFileContents;
+
     }
 }
