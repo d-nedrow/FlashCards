@@ -56,10 +56,9 @@ public class User {
                 input = new Scanner(userList);
 
                 while (input.hasNextLine()) {
-                    oldFileContents = input.nextLine() + "\n";
+                    oldFileContents += input.nextLine() + "\n";
                 }
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
                 return false; // username, password not saved due to error
             }
         }
@@ -68,9 +67,9 @@ public class User {
             output = new PrintWriter(userList);
             output.print(oldFileContents);
             output.println(username + " " + password);
+            output.close();
             return true; // username, password saved
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
             return false; // username, password not saved due to error
         }
     }
