@@ -3,9 +3,7 @@ package flashcards.model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,8 +36,8 @@ public class User {
     }
 
     public void saveUserState() {
-        new File("userStates").mkdirs();
-        String filename = "userStates/" + username + ".txt";
+        new File(getPath() + "/userStates").mkdirs();
+        String filename = getPath() + "/userStates/" + username + ".txt";
         PrintWriter output;
         FlashCard[] flashcards;
 
@@ -58,7 +56,7 @@ public class User {
                     for (int k = 0; k < flashcards[j].getNumAttempts(); k++) {
                         output.print(history[k] + " ");
                     }
-                    
+
                     output.println();
                 }
             }
@@ -71,7 +69,7 @@ public class User {
     }
 
     public void loadUserState() {
-        String filename = "userStates/" + username + ".txt";
+        String filename = getPath() + "/userStates/" + username + ".txt";
         File userState = new File(filename);
         Scanner input;
         String inputLine;
@@ -89,7 +87,9 @@ public class User {
                     questionAndAnswer = inputLine.split(" #ANSW ");
                     flashcard = new FlashCard(questionAndAnswer[0],
                             questionAndAnswer[1]);
-                    flashcard.setRightWrongHistory(questionAndAnswer[2]);
+                    if (questionAndAnswer.length > 2) {
+                        flashcard.setRightWrongHistory(questionAndAnswer[2]);
+                    }
                     subjects[numSubjects - 1].addFlashCard(flashcard);
                 }
             }
@@ -99,7 +99,7 @@ public class User {
     }
 
     public static boolean isDuplicateUser(String potentialUsername) {
-        File userList = new File("users.txt");
+        File userList = new File(getPath() + "/users.txt");
         Scanner input;
         String usernameAndPassword, usernameOnly;
 
@@ -124,7 +124,7 @@ public class User {
     }
 
     public boolean saveUsernameAndPassword() {
-        File userList = new File("users.txt");
+        File userList = new File(getPath() + "/users.txt");
         PrintWriter output;
         String oldFileContents = "";
 
@@ -144,7 +144,7 @@ public class User {
     }
 
     public static User login(String typedUsername, String typedPassword) {
-        File userList = new File("users.txt");
+        File userList = new File(getPath() + "/users.txt");
         String[] usernamePasswordEntry;
         User theUser;
 
@@ -186,5 +186,11 @@ public class User {
 
         return oldFileContents;
 
+    }
+    
+    public static String getPath() {
+        String path = (System.getProperty("user.dir"));
+        return path.substring(0, path.indexOf("FlashCards")
+                + "FlashCards".length());
     }
 }
