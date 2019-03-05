@@ -3,7 +3,9 @@ package flashcards.model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,13 +33,16 @@ public class User {
         subjects[numSubjects++] = subject;
     }
 
+    public int getNumSubjects() {
+        return numSubjects;
+    }
+
     public void saveUserState() {
         new File("userStates").mkdirs();
         String filename = "userStates/" + username + ".txt";
-        File userState = new File(filename);
         PrintWriter output;
         FlashCard[] flashcards;
-        
+
         try {
             output = new PrintWriter(filename);
 
@@ -46,25 +51,33 @@ public class User {
                 flashcards = subjects[i].getFlashCards();
 
                 for (int j = 0; j < subjects[i].getNumFlashcards(); j++) {
-                    output.println(flashcards[j].getQuestion() + " #ANSW "
-                            + flashcards[j].getAnswer());
+                    output.print(flashcards[j].getQuestion() + " #ANSW "
+                            + flashcards[j].getAnswer() + " #ANSW ");
+
+                    int[] history = flashcards[j].getRightWrongHistory();
+                    for (int k = 0; k < flashcards[j].getNumAttempts(); k++) {
+                        output.print(history[k] + " ");
+                    }
+                    
+                    output.println();
                 }
             }
-            
+
             output.close();
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void loadUserState() {
         String filename = "userStates/" + username + ".txt";
         File userState = new File(filename);
         Scanner input;
         String inputLine;
         String[] questionAndAnswer;
-                
+        FlashCard flashcard;
+
         try {
             input = new Scanner(userState);
             while (input.hasNextLine()) {
@@ -74,8 +87,10 @@ public class User {
                     addSubject(new Subject(inputLine));
                 } else {
                     questionAndAnswer = inputLine.split(" #ANSW ");
-                    subjects[numSubjects - 1].addFlashCard(questionAndAnswer[0]
-                            , questionAndAnswer[1]);
+                    flashcard = new FlashCard(questionAndAnswer[0],
+                            questionAndAnswer[1]);
+                    flashcard.setRightWrongHistory(questionAndAnswer[2]);
+                    subjects[numSubjects - 1].addFlashCard(flashcard);
                 }
             }
         } catch (FileNotFoundException ex) {

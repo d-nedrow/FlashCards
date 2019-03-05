@@ -32,8 +32,25 @@ public class FlashCard {
         answer = newAnswer;
     }
     
+    public int getNumAttempts() {
+        return numAttempts;
+    }
+    
+    public int[] getRightWrongHistory() {
+        return rightWrongHistory;
+    }
+    
+    public void setRightWrongHistory(String numbers) {
+        String[] history = numbers.split(" ");
+        
+        for (int i = 0; i < history.length; i++) {
+            rightWrongHistory[i] = Integer.parseInt(history[i]);
+            numAttempts++;
+        }
+    }
+    
     public boolean autoCheckCorrect(String attempt) {
-        if (question.equalsIgnoreCase(attempt)){
+        if (answer.equalsIgnoreCase(attempt)){
             rightWrongHistory[numAttempts++] = 1;
             return true;
         } else {
@@ -51,20 +68,25 @@ public class FlashCard {
     }
     
     public double getPercentCorrect() {
-        double sum = 0;
+        int sum = 0;
+                
         for(int i = 0; i < numAttempts; i++) {
             sum += rightWrongHistory[i];
         }
         
-        return sum / numAttempts;
+        return (sum * 1.0 / numAttempts) * 100;
+         
     }
     
     public double getPercentCorrectLast5() {
-        double sum = 0;
-        for (int i = numAttempts - 5; i < numAttempts; i++) {
+        int sum = 0;
+        int divisor = Math.min(numAttempts, 5);
+        
+        int i = Math.max(numAttempts - 5, 0);
+        for (; i < numAttempts; i++) {
             sum += rightWrongHistory[i];
         }
         
-        return sum / 5;
+        return (sum * 1.0 / divisor) * 100;
     }
 }

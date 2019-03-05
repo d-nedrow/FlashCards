@@ -27,6 +27,10 @@ public class Subject {
         flashcards[numFlashcards++] = new FlashCard(question, answer);
     }
     
+    public void addFlashCard(FlashCard flashcard) {
+        flashcards[numFlashcards++] = flashcard;
+    }
+    
     public int getNumFlashcards() {
         return numFlashcards;
     }
