@@ -2,6 +2,7 @@ package flashcards.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -80,9 +81,14 @@ public class User {
                             + flashcards[j].getAnswer() + " #ANSW ");
 
                     // output flash card's right/wrong history to file
-                    int[] history = flashcards[j].getRightWrongHistory();
-                    for (int k = 0; k < flashcards[j].getNumAttempts(); k++) {
-                        output.print(history[k] + " ");
+                    output.print(flashcards[j].getNumAttempts() + " "
+                            + flashcards[j].getNumCorrect() + " "
+                            + flashcards[j].getNumIncorrect() + " ");
+
+                    // output flash card's last 5 right/wrong to file
+                    int[] last5 = flashcards[j].getLast5Attempts();
+                    for (int k = 0; k < 5; k++) {
+                        output.print(last5[k] + " ");
                     }
 
                     output.println();
@@ -104,7 +110,7 @@ public class User {
         File userState = new File(filename);
         Scanner input;
         String inputLine;
-        String[] questionAndAnswer;
+        String[] flashcardInfo;
         FlashCard flashcard;
 
         try {
@@ -119,19 +125,33 @@ public class User {
                     addSubject(new Subject(inputLine));
                 } else {
                     // split text into question, answer, right/wrong history
-                    questionAndAnswer = inputLine.split(" #ANSW ");
-                    flashcard = new FlashCard(questionAndAnswer[0],
-                            questionAndAnswer[1]);
+                    flashcardInfo = inputLine.split(" #ANSW ");
+                    flashcard = new FlashCard(flashcardInfo[0],
+                            flashcardInfo[1]);
 
-                    // load right/wrong history only if there is one 
-                    if (questionAndAnswer.length > 2) {
-                        flashcard.setRightWrongHistory(questionAndAnswer[2]);
+                    // load right/wrong history for flashcard
+                    String[] history = flashcardInfo[2].split(" ");
+                    flashcard.setNumAttempts(Integer.parseInt(history[0]));
+                    flashcard.setNumCorrect(Integer.parseInt(history[1]));
+                    flashcard.setNumIncorrect(Integer.parseInt(history[2]));
+
+                    // load last 5 attempts history for flashcard
+                    int[] last5 = new int[5];
+                    for (int i = 0; i < 5; i++) {
+                        last5[i] = Integer.parseInt(history[i + 3]);
                     }
+                    flashcard.setLast5Attempts(last5);
+
                     subjects[numSubjects - 1].addFlashCard(flashcard);
                 }
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                userState.createNewFile(); // if the file didn't exist, create
+            } catch (IOException ex1) {
+                Logger.getLogger(User.class.getName()).log(Level.SEVERE, null,
+                        ex1);
+            }
         }
     }
 
@@ -159,7 +179,7 @@ public class User {
                     }
                 }
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, 
+                Logger.getLogger(User.class.getName()).log(Level.SEVERE, null,
                         ex);
             }
         }

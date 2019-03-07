@@ -8,8 +8,8 @@ package flashcards.model;
 public class FlashCard {
 
     private String question, answer;
-    private int[] rightWrongHistory; // "1" for each correct, "0" for incorrect
-    private int numAttempts;
+    private int numAttempts, numCorrect, numIncorrect;
+    private int[] last5Attempts; // "1" for correct, "0" for incorrect
 
     /**
      * Create new FlashCard with given question and answer.
@@ -20,8 +20,8 @@ public class FlashCard {
     public FlashCard(String question, String answer) {
         this.question = question;
         this.answer = answer;
-        rightWrongHistory = new int[100];
-        numAttempts = 0;
+        numAttempts = numCorrect = numIncorrect = 0;
+        last5Attempts = new int[5];
     }
 
     /**
@@ -46,26 +46,60 @@ public class FlashCard {
     }
 
     /**
-     * @return An array with user's history of correct, incorrect answers. "1"
-     * for each correct answer, "0" for each incorrect answer.
+     * @return the number of times user has answered this flash card correctly
      */
-    public int[] getRightWrongHistory() {
-        return rightWrongHistory;
+    public int getNumCorrect() {
+        return numCorrect;
     }
 
     /**
-     * Takes in single String of 1's and 0's and converts those numbers into the
-     * the user's right/wrong history. For loading saved user state.
-     *
-     * @param numbers the String of 1's and 0's to be converted to int[]
+     * @return the number of times user has answered this flash card incorrectly
      */
-    public void setRightWrongHistory(String numbers) {
-        String[] history = numbers.split(" ");
+    public int getNumIncorrect() {
+        return numIncorrect;
+    }
 
-        for (int i = 0; i < history.length; i++) {
-            rightWrongHistory[i] = Integer.parseInt(history[i]);
-            numAttempts++;
-        }
+    /**
+     * Set the number of times the user has attempted this flash card.
+     *
+     * @param numAttempts number of times user has attempted this flash card
+     */
+    public void setNumAttempts(int numAttempts) {
+        this.numAttempts = numAttempts;
+    }
+
+    /**
+     * Set number of times the user has answered this flash card correctly.
+     *
+     * @param numCorrect number of user's correct answers for flash card
+     */
+    public void setNumCorrect(int numCorrect) {
+        this.numCorrect = numCorrect;
+    }
+
+    /**
+     * Set number of times user has answered this flash card incorrectly.
+     *
+     * @param numIncorrect number of user's incorrect answers for flash card
+     */
+    public void setNumIncorrect(int numIncorrect) {
+        this.numIncorrect = numIncorrect;
+    }
+
+    /**
+     * @return right/wrong history of user's last 5 attempts
+     */
+    public int[] getLast5Attempts() {
+        return last5Attempts;
+    }
+
+    /**
+     * Set user's right/wrong history of last 5 attempts on flash card.
+     *
+     * @param last5 array with right/wrong history of last 5 attempts
+     */
+    public void setLast5Attempts(int[] last5) {
+        last5Attempts = last5;
     }
 
     /**
@@ -76,13 +110,19 @@ public class FlashCard {
      * @return true if correct, false otherwise
      */
     public boolean autoCheckCorrect(String attempt) {
+        boolean correct;
         if (answer.equalsIgnoreCase(attempt)) {
-            rightWrongHistory[numAttempts++] = 1;
-            return true;
+            numCorrect++;
+            last5Attempts[numAttempts % 5] = 1;
+            correct = true;
         } else {
-            rightWrongHistory[numAttempts++] = 0;
-            return false;
+            numIncorrect++;
+            last5Attempts[numAttempts % 5] = 0;
+            correct = false;
         }
+
+        numAttempts++;
+        return correct;
     }
 
     /**
@@ -94,37 +134,41 @@ public class FlashCard {
      */
     public void userChecksAnswer(boolean correct) {
         if (correct) {
-            rightWrongHistory[numAttempts++] = 1;
+            numCorrect++;
+            last5Attempts[numAttempts % 5] = 1;
         } else {
-            rightWrongHistory[numAttempts++] = 0;
+            numIncorrect++;
+            last5Attempts[numAttempts % 5] = 0;
         }
+
+        numAttempts++;
     }
 
     /**
      * @return lifetime percentage of correct answers for this flash card
      */
     public double getPercentCorrect() {
-        int sum = 0;
-
-        for (int i = 0; i < numAttempts; i++) {
-            sum += rightWrongHistory[i];
+        if (numAttempts == 0) {
+            return 0;
         }
 
-        return (sum * 1.0 / numAttempts) * 100;
+        return (numCorrect * 1.0 / numAttempts) * 100;
     }
 
     /**
      * @return percentage of correct answers over last 5 attempts
      */
     public double getPercentCorrectLast5() {
-        int sum = 0;
-        int divisor = Math.min(numAttempts, 5); // user may not have 5 attempts
-
-        int i = Math.max(numAttempts - 5, 0); // protect from less than 5 tries
-        for (; i < numAttempts; i++) {
-            sum += rightWrongHistory[i];
+        if (numAttempts == 0) {
+            return 0;
         }
 
+        int sum = 0;
+        for (int i = 0; i < 5 && i < numAttempts; i++) {
+            sum += last5Attempts[i];
+        }
+
+        int divisor = Math.min(numAttempts, 5); // user may not have 5 attempts
         return (sum * 1.0 / divisor) * 100;
     }
 }
