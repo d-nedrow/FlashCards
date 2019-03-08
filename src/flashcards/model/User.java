@@ -77,21 +77,7 @@ public class User {
                 // output each of subject's flash cards to file
                 flashcards = subjects[i].getFlashCards();
                 for (int j = 0; j < subjects[i].getNumFlashcards(); j++) {
-                    output.print(flashcards[j].getQuestion() + " #ANSW "
-                            + flashcards[j].getAnswer() + " #ANSW ");
-
-                    // output flash card's right/wrong history to file
-                    output.print(flashcards[j].getNumAttempts() + " "
-                            + flashcards[j].getNumCorrect() + " "
-                            + flashcards[j].getNumIncorrect() + " ");
-
-                    // output flash card's last 5 right/wrong to file
-                    int[] last5 = flashcards[j].getLast5Attempts();
-                    for (int k = 0; k < 5; k++) {
-                        output.print(last5[k] + " ");
-                    }
-
-                    output.println();
+                    output.print(flashcards[j]);
                 }
             }
 
@@ -110,7 +96,6 @@ public class User {
         File userState = new File(filename);
         Scanner input;
         String inputLine;
-        String[] flashcardInfo;
         FlashCard flashcard;
 
         try {
@@ -124,24 +109,8 @@ public class User {
                     inputLine = inputLine.substring("Subject: ".length());
                     addSubject(new Subject(inputLine));
                 } else {
-                    // split text into question, answer, right/wrong history
-                    flashcardInfo = inputLine.split(" #ANSW ");
-                    flashcard = new FlashCard(flashcardInfo[0],
-                            flashcardInfo[1]);
-
-                    // load right/wrong history for flashcard
-                    String[] history = flashcardInfo[2].split(" ");
-                    flashcard.setNumAttempts(Integer.parseInt(history[0]));
-                    flashcard.setNumCorrect(Integer.parseInt(history[1]));
-                    flashcard.setNumIncorrect(Integer.parseInt(history[2]));
-
-                    // load last 5 attempts history for flashcard
-                    int[] last5 = new int[5];
-                    for (int i = 0; i < 5; i++) {
-                        last5[i] = Integer.parseInt(history[i + 3]);
-                    }
-                    flashcard.setLast5Attempts(last5);
-
+                    // the input line has the data to create a flash card
+                    flashcard = FlashCard.fromString(inputLine);
                     subjects[numSubjects - 1].addFlashCard(flashcard);
                 }
             }

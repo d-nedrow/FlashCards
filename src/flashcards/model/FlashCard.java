@@ -7,6 +7,10 @@ package flashcards.model;
  */
 public class FlashCard {
 
+    private static final String DELIM = " @DL ";
+    private static final int QUESTION = 0, ANSWER = 1, NUM_ATTEMPTS = 2,
+            NUM_CORRECT = 3, NUM_INCORRECT = 4, LAST_5_ATTEMPTS = 5;
+
     private String question, answer;
     private int numAttempts, numCorrect, numIncorrect;
     private int[] last5Attempts; // "1" for correct, "0" for incorrect
@@ -36,6 +40,24 @@ public class FlashCard {
      */
     public String getAnswer() {
         return answer;
+    }
+
+    /**
+     * Set the flash card's question.
+     *
+     * @param question the question to assign to this flash card
+     */
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    /**
+     * Set the flash card's answer
+     *
+     * @param answer the answer to assign to this flash card
+     */
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
     /**
@@ -170,5 +192,51 @@ public class FlashCard {
 
         int divisor = Math.min(numAttempts, 5); // user may not have 5 attempts
         return (sum * 1.0 / divisor) * 100;
+    }
+
+    /**
+     * Gives a String with all the data of a FlashCard, suitable for save file.
+     * This method is the inverse of the fromString method in that it produces a
+     * String format of a FlashCard which fromString can use to create the
+     * FlashCard.
+     *
+     * @return a String representing the FlashCard
+     */
+    @Override
+    public String toString() {
+        StringBuilder flashcardString = new StringBuilder(question + DELIM
+                + answer + DELIM + numAttempts + DELIM + numCorrect + DELIM
+                + numIncorrect + DELIM);
+
+        for (int i = 0; i < 5; i++) {
+            flashcardString.append(last5Attempts[i]).append(" ");
+        }
+
+        flashcardString.append("\n");
+        return flashcardString.toString();
+    }
+
+    /**
+     * This method is the inverse of the toString method in that it takes the
+     * toString format of a FlashCard and returns the FlashCard object.
+     *
+     * @param flashcardString a String with all the data for a FlashCard
+     * @return the FlashCard with its data loaded from flashcardString
+     */
+    public static FlashCard fromString(String flashcardString) {
+        String[] data = flashcardString.split(DELIM);
+        FlashCard flashcard = new FlashCard(data[QUESTION], data[ANSWER]);
+        flashcard.setNumAttempts(Integer.parseInt(data[NUM_ATTEMPTS]));
+        flashcard.setNumCorrect(Integer.parseInt(data[NUM_CORRECT]));
+        flashcard.setNumIncorrect(Integer.parseInt(data[NUM_INCORRECT]));
+
+        String[] last5 = data[LAST_5_ATTEMPTS].split(" ");
+        int[] last5Atmpts = new int[5];
+        for (int i = 0; i < 5; i++) {
+            last5Atmpts[i] = Integer.parseInt(last5[i]);
+        }
+        flashcard.setLast5Attempts(last5Atmpts);
+
+        return flashcard;
     }
 }
