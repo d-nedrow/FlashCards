@@ -3,6 +3,7 @@ package flashcards.drivers;
 import flashcards.model.FlashCard;
 import flashcards.model.Subject;
 import flashcards.model.User;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -78,7 +79,7 @@ public class ProgramDriver {
      * @param subject the subject the user is currently working with
      */
     public static void practice(Subject subject) {
-        FlashCard[] flashcards = subject.getFlashCards();
+        ArrayList<FlashCard> flashcards = subject.getFlashCards();
         int numFlashcards = subject.getNumFlashcards();
         int gradingChoice;
         String answer;
@@ -110,7 +111,7 @@ public class ProgramDriver {
             }
 
             // cycle through the flashcard array, don't go out-of-bounds
-            flashcard = flashcards[flashcardIndex % numFlashcards];
+            flashcard = flashcards.get(flashcardIndex % numFlashcards);
 
             System.out.println("\n" + flashcard.getQuestion());
             System.out.print("Answer: ");
@@ -191,12 +192,13 @@ public class ProgramDriver {
         String subjectTitle;
 
         System.out.println("\n1. Create New Subject");
-        Subject[] subjects = theUser.getSubjects(); // user's current subjects
+        ArrayList<Subject> subjects = theUser.getSubjects(); // user's subjects
 
         // display list of available subjects
         int index;
         for (index = 0; index < theUser.getNumSubjects(); index++) {
-            System.out.println((index + 2) + ". " + subjects[index].getTitle());
+            System.out.println((index + 2) + ". "
+                    + subjects.get(index).getTitle());
         }
 
         System.out.println((index + 2) + ". Quit"); // display quit option
@@ -211,7 +213,7 @@ public class ProgramDriver {
             theUser.addSubject(newSubject);
             return newSubject;
         } else if (subjectChoice < index && subjectChoice > -1) {
-            return subjects[subjectChoice]; // user chose existing subject
+            return subjects.get(subjectChoice); // user chose existing subject
         } else { // user chose to quit, return no subject
             return null;
         }

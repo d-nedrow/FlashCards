@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
 public class User {
 
     private String username, password;
-    private Subject[] subjects;
+    private ArrayList<Subject> subjects;
     private int numSubjects;
 
     /**
@@ -30,13 +31,13 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        subjects = new Subject[10];
+        subjects = new ArrayList<>();
     }
 
     /**
-     * @return array containing user's subjects
+     * @return ArrayList containing user's subjects
      */
-    public Subject[] getSubjects() {
+    public ArrayList<Subject> getSubjects() {
         return subjects;
     }
 
@@ -46,7 +47,8 @@ public class User {
      * @param subject subject to be added for this user
      */
     public void addSubject(Subject subject) {
-        subjects[numSubjects++] = subject;
+        subjects.add(subject);
+        numSubjects++;
     }
 
     /**
@@ -65,19 +67,19 @@ public class User {
 
         String filename = getPath() + "/userStates/" + username + ".txt";
         PrintWriter output;
-        FlashCard[] flashcards;
+        ArrayList<FlashCard> flashcards;
 
         try {
             output = new PrintWriter(filename);
 
             // output each of user's subjects to file
-            for (int i = 0; i < numSubjects; i++) {
-                output.println("Subject: " + subjects[i].getTitle());
+            for (Subject subject : subjects) {
+                output.println("Subject: " + subject.getTitle());
 
                 // output each of subject's flash cards to file
-                flashcards = subjects[i].getFlashCards();
-                for (int j = 0; j < subjects[i].getNumFlashcards(); j++) {
-                    output.print(flashcards[j]);
+                flashcards = subject.getFlashCards();
+                for (FlashCard flashcard : flashcards) {
+                    output.print(flashcard);
                 }
             }
 
@@ -111,7 +113,7 @@ public class User {
                 } else {
                     // the input line has the data to create a flash card
                     flashcard = FlashCard.fromString(inputLine);
-                    subjects[numSubjects - 1].addFlashCard(flashcard);
+                    subjects.get(numSubjects - 1).addFlashCard(flashcard);
                 }
             }
         } catch (FileNotFoundException ex) {

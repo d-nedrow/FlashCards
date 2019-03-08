@@ -1,5 +1,7 @@
 package flashcards.model;
 
+import java.util.ArrayList;
+
 /**
  * A class which models a subject or topic to be filled with FlashCards.
  *
@@ -8,7 +10,7 @@ package flashcards.model;
 public class Subject {
 
     private String title;
-    private FlashCard[] flashcards;
+    private ArrayList<FlashCard> flashcards;
     private int numFlashcards;
 
     /**
@@ -18,7 +20,7 @@ public class Subject {
      */
     public Subject(String title) {
         this.title = title;
-        flashcards = new FlashCard[100];
+        flashcards = new ArrayList<>();
         numFlashcards = 0;
     }
 
@@ -30,9 +32,9 @@ public class Subject {
     }
 
     /**
-     * @return the subject's array of FlashCards
+     * @return the subject's ArrayList of FlashCards
      */
-    public FlashCard[] getFlashCards() {
+    public ArrayList<FlashCard> getFlashCards() {
         return flashcards;
     }
 
@@ -43,7 +45,8 @@ public class Subject {
      * @param answer flash card answer
      */
     public void addFlashCard(String question, String answer) {
-        flashcards[numFlashcards++] = new FlashCard(question, answer);
+        flashcards.add(new FlashCard(question, answer));
+        numFlashcards++;
     }
 
     /**
@@ -52,7 +55,8 @@ public class Subject {
      * @param flashcard FlashCard to add to subject
      */
     public void addFlashCard(FlashCard flashcard) {
-        flashcards[numFlashcards++] = flashcard;
+        flashcards.add(flashcard);
+        numFlashcards++;
     }
 
     /**
