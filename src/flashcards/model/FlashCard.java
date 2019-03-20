@@ -193,7 +193,18 @@ public class FlashCard {
         int divisor = Math.min(numAttempts, 5); // user may not have 5 attempts
         return (sum * 1.0 / divisor) * 100;
     }
-
+    
+/**
+     * When this method is called it will reset the history of number of attempts,
+     * number correct, number incorrect, and last 5 attempts.
+     * clears the current card's score
+     */
+    public void resetScore() {
+        numAttempts = 0;
+        numCorrect = 0;
+        numIncorrect = 0;
+        last5Attempts = new int[5];
+    }
     /**
      * Gives a String with all the data of a FlashCard, suitable for save file.
      * This method is the inverse of the fromString method in that it produces a
@@ -202,6 +213,7 @@ public class FlashCard {
      *
      * @return a String representing the FlashCard
      */
+    
     @Override
     public String toString() {
         StringBuilder flashcardString = new StringBuilder(question + DELIM
