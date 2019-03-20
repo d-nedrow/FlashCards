@@ -65,4 +65,14 @@ public class Subject {
     public int getNumFlashcards() {
         return numFlashcards;
     }
+    /**
+     * cycles through the array list
+     * clearing each card's score
+     */
+    public void resetFlashcards() {
+        int i = 0;
+        for(FlashCard card: flashcards) {
+            card.resetScore();
+        }
+    }
 }
