@@ -45,11 +45,11 @@ public class ProgramDriver {
 
             System.out.println("You have chosen " + subject.getTitle());
 
-            // user chooses to add flashcards or practice within this subject
+            // user chooses to add flashcards, practice within this subject, or reset all of their scores
             thisSubject:
             while (true) {
                 System.out.println("\nWould you like to add flashcards or "
-                        + "practice?\n1. Add flashcards\n2. Practice\n3. Return"
+                        + "practice?\n1. Add flashcards\n2. Practice\n3. Reset Score\n4. Return"
                         + " to previous menu");
                 System.out.print("Enter the number of the option you want: ");
                 option = Integer.parseInt(keyboard.nextLine());
@@ -61,6 +61,8 @@ public class ProgramDriver {
                     case 2:
                         practice(subject);
                         break;
+                    case 3:
+                        subject.resetFlashcards();
                     default:
                         break thisSubject; // break out of loop with this label
                 }
