@@ -28,20 +28,26 @@ public class ProgramDriver {
 
         // keep running program until user selects "Quit" from outer menu
         while (true) {
-            System.out.println("\nWould you like to choose a subject or quit?\n"
-                    + "1. Choose Subject\n2. Quit");
+            System.out.println("\nWould you like to choose a subject, delete a subject, or quit?\n"
+                    + "1. Choose Subject\n2. Delete Subject\n3. Quit");
             System.out.print("Enter the number of the option you want: ");
             option = Integer.parseInt(keyboard.nextLine());
 
-            if (option != 1) { // user chose to quit, so exit loop
+            if (option != 1 && option != 2) { // user chose to quit, so exit loop
                 break;
+            }
+            
+            if (option == 2) {
+                deleteSubject(theUser);
             }
 
             // get user to choose or create a subject to work with
-            Subject subject = chooseSubject(theUser);
-            if (subject == null) {
-                break; // user didn't want to choose a subject, time to quit
-            }
+            if(option == 1) {
+                Subject subject = chooseSubject(theUser);
+                if (subject == null) {
+                    break; // user didn't want to choose a subject, time to quit
+                }
+            
 
             System.out.println("You have chosen " + subject.getTitle());
 
@@ -49,7 +55,7 @@ public class ProgramDriver {
             thisSubject:
             while (true) {
                 System.out.println("\nWould you like to add flashcards or "
-                        + "practice?\n1. Add flashcards\n2. Practice\n3. Reset Score\n4. Return"
+                        + "practice?\n1. Add flashcards\n2. Practice\n3. Delete flashcards\n4. Reset Score\n5. Return"
                         + " to previous menu");
                 System.out.print("Enter the number of the option you want: ");
                 option = Integer.parseInt(keyboard.nextLine());
@@ -62,11 +68,15 @@ public class ProgramDriver {
                         practice(subject);
                         break;
                     case 3:
+                        removeFlashCard(subject);
+                    case 4:
                         subject.resetFlashcards();
                     default:
                         break thisSubject; // break out of loop with this label
                 }
             }
+        } // end user choice if statement
+            
         } // end outer menu loop
 
         theUser.saveUserState(); // save user's state before exiting
@@ -181,6 +191,37 @@ public class ProgramDriver {
             }
         }
     }
+    
+    public static void removeFlashCard(Subject subject) {
+        ArrayList<FlashCard> flashcards = subject.getFlashCards();
+        int numFlashcards = subject.getNumFlashcards();
+        String answer;
+        FlashCard flashcard;
+        
+        // continue asking user to delete flashcards until user types "quit" as answer
+        while (numFlashcards > 0) {
+            
+            for (int i = 0; i < numFlashcards; i++) {
+                flashcard = flashcards.get(i); // cycle through the flashcard array, don't go out-of-bounds
+                
+                System.out.println("\n" + flashcard.getQuestion());
+                System.out.print("Do you want to delete this flash card? 'Y' or 'N' ");
+                answer = keyboard.nextLine();
+                
+                if (answer.equalsIgnoreCase("Y")) {
+                    subject.removeFlashcard(flashcard); // delete this flashcard
+                    flashcards.remove(flashcard);
+                    numFlashcards = subject.getNumFlashcards();
+                    i--;
+                } 
+            }
+            System.out.println("Type 'QUIT' to quit or 'again' to keep deleting. ");
+              answer = keyboard.nextLine();
+              if (answer.equalsIgnoreCase("QUIT")) {
+                break; // stop deleting flashcards
+            }
+        } // end while loop of continuous flash card questions
+    } // end practice method
 
     /**
      * Prompt user to choose a subject to work with or create a new one, and
@@ -202,7 +243,7 @@ public class ProgramDriver {
             System.out.println((index + 2) + ". "
                     + subjects.get(index).getTitle());
         }
-
+        
         System.out.println((index + 2) + ". Quit"); // display quit option
         System.out.print("Enter the number of the option you want: ");
         // adjust for fact that displayed numbers don't match subj. array index
@@ -219,6 +260,30 @@ public class ProgramDriver {
         } else { // user chose to quit, return no subject
             return null;
         }
+    }
+    
+    public static void deleteSubject(User theUser) {
+        int subjectChoice;
+        ArrayList<Subject> subjects = theUser.getSubjects(); // user's subjects
+
+        // display list of available subjects
+        int index;
+        for (index = 0; index < theUser.getNumSubjects(); index++) {
+            System.out.println((index + 1) + ". "
+                    + subjects.get(index).getTitle());
+        }
+        
+        System.out.print("Enter the subject number you want to delete or type '0' to quit");
+        // adjust for fact that displayed numbers don't match subj. array index
+        subjectChoice = Integer.parseInt(keyboard.nextLine()) - 1;
+        
+        
+        if (subjectChoice < index && subjectChoice > -1) {
+            System.out.println(subjects.get(subjectChoice));
+            theUser.deleteSubject(subjects.get(subjectChoice)); // user chose existing subject
+            
+         // user chose to quit, return no subject
+        }  
     }
 
     /**
