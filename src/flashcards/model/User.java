@@ -50,6 +50,11 @@ public class User {
         subjects.add(subject);
         numSubjects++;
     }
+    
+    public void deleteSubject(Subject subject) {
+        subjects.remove(subject);
+        numSubjects--;
+    }
 
     /**
      * @return the current number of subjects for this user

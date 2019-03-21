@@ -74,4 +74,9 @@ public class Subject {
             card.resetScore();
         }
     }
+    
+    public void removeFlashcard(FlashCard card) {
+        flashcards.remove(card);
+        numFlashcards--;
+    }
 }
