@@ -1,6 +1,7 @@
 package flashcards.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A class which models a subject or topic to be filled with FlashCards.
@@ -78,5 +79,8 @@ public class Subject {
     public void removeFlashcard(FlashCard card) {
         flashcards.remove(card);
         numFlashcards--;
+    }
+    public void shuffleFlashcards() {
+        Collections.shuffle(flashcards);
     }
 }
