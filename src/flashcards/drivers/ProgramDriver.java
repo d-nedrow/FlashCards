@@ -38,15 +38,6 @@ public class ProgramDriver {
      */
     public static void testProgramWithConsoleInterface() {
         
-        //TODO: delete this test code block:
-        String myPass = "password";
-        String hash = encrypt(myPass);
-        System.out.println("Original Pass: " + myPass + "\nEncrypted Pass: " + hash);
-        String myPass2 = "hello";
-        String hash2 = encrypt(myPass2);
-        System.out.println("Original Pass2: " + myPass2 + "\nEncrypted Pass2: " + hash2);
-        
-        
         User theUser = registerOrLogin(); // get user to register or login
         int option; // reusable variable to store user's console selections
 
@@ -336,6 +327,7 @@ public class ProgramDriver {
                 if (User.isDuplicateUser(username)) {
                     System.out.println("Sorry, that username is taken.");
                 } else { // register user
+                    
                     theUser = new User(username, securePassword);
                     //userInfoSaveSuccess = theUser.saveUsernameAndPassword();
                     if (theUser.saveUsernameAndPassword()) {
@@ -375,9 +367,12 @@ public class ProgramDriver {
     //by using the getSalt() and hash() methods then returns an
     //encrypted String
     public static String encrypt(String textToEncrypt) {
-        byte[] salt = getSalt();
+        byte[] salt = getSalt(); //generate salt
         byte[] hash = hash(textToEncrypt.toCharArray(), salt);
-        String hashString = hash.toString();
+        String hashString = "";
+        for (int i = 0; i < hash.length; i++) {
+            hashString += (char)hash[i];
+        }
         return hashString;
     }
     
@@ -419,7 +414,7 @@ public class ProgramDriver {
     public static boolean verifyUserPassword(String providedPassword, 
                                              String securedPassword, 
                                              String salt) {
-        boolean returnValue = false;
+        boolean returnValue = false; 
         
         //generate new secure password with the same salt value
         String newSecurePassword = generateSecurePassword(providedPassword, salt);

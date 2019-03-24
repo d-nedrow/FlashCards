@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 public class User {
 
     private String username, password;
+    private String salt;
     private ArrayList<Subject> subjects;
     private int numSubjects;
 
@@ -31,6 +32,7 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        //this.salt = salt;
         subjects = new ArrayList<>();
     }
 
@@ -62,7 +64,21 @@ public class User {
     public int getNumSubjects() {
         return numSubjects;
     }
-
+    
+    /**
+     * sets salt
+     */
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+    
+    /**
+     * get salt
+     */
+    public String getSalt() {
+        return this.salt;
+    }
+    
     /**
      * Save the user's subjects, flash cards, and right/wrong history to file.
      */
@@ -181,7 +197,7 @@ public class User {
         try {
             output = new PrintWriter(userList);
             output.print(oldFileContents); // copy previous user list to file
-            output.println(username + " " + password); // add this user
+            output.println(username + " " + password + " "); // add this user
             output.close();
             return true; // username, password saved
         } catch (FileNotFoundException ex) {
