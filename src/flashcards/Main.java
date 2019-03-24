@@ -15,7 +15,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root
-                = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+                = FXMLLoader.load(getClass().getResource("LoginWindow.fxml"));
 
         Scene scene = new Scene(root);
 
@@ -27,11 +27,11 @@ public class Main extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //launch(args); // uncomment to allow GUI to launch
+        launch(args); // uncomment to allow GUI to launch
         
         // test existing model classes with temporary console interface driver
-        ProgramDriver.testProgramWithConsoleInterface();
-        System.exit(0); // required to exit when there is no GUI exit
+        //ProgramDriver.testProgramWithConsoleInterface();
+        //System.exit(0); // required to exit when there is no GUI exit
     }
 
 }
