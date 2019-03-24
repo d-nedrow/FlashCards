@@ -169,7 +169,7 @@ public class User {
      * @return true if successfully saved, false otherwise
      */
     public boolean saveUsernameAndPassword() {
-        File userList = new File(getPath() + "/users.txt");
+        File userList = new File("users.txt"); //File userList = new File(getPath() + "/users.txt");
         PrintWriter output;
         String oldFileContents = "";
 
@@ -177,7 +177,7 @@ public class User {
         if (userList.exists()) {
             oldFileContents = getOldFileContents(userList);
         }
-
+        
         try {
             output = new PrintWriter(userList);
             output.print(oldFileContents); // copy previous user list to file

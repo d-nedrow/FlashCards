@@ -6,6 +6,15 @@ import flashcards.model.User;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Random;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+
 /**
  * Driver class which currently tests FlashCard, Subject, and User classes tied
  * together for meaningful command-line interface flash card program. There is
@@ -18,11 +27,26 @@ public class ProgramDriver {
 
     static Scanner keyboard = new Scanner(System.in);
 
+    //variables for encryption
+    private static final Random RANDOM = new SecureRandom();
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int ITERATIONS = 10000;
+    private static final int KEY_LENGTH = 256;
     /**
      * The "main" method of this class, to be invoked by project's Main class.
      * Centralizes console-interface testing of current FlashCard project.
      */
     public static void testProgramWithConsoleInterface() {
+        
+        //TODO: delete this test code block:
+        String myPass = "password";
+        String hash = encrypt(myPass);
+        System.out.println("Original Pass: " + myPass + "\nEncrypted Pass: " + hash);
+        String myPass2 = "hello";
+        String hash2 = encrypt(myPass2);
+        System.out.println("Original Pass2: " + myPass2 + "\nEncrypted Pass2: " + hash2);
+        
+        
         User theUser = registerOrLogin(); // get user to register or login
         int option; // reusable variable to store user's console selections
 
@@ -306,12 +330,14 @@ public class ProgramDriver {
                 username = keyboard.next();
                 System.out.print("Enter desired password: ");
                 password = keyboard.next();
-
+                String securePassword = encrypt(password); //encrypts password right after user types it
+                
                 // check if username taken before user is registered
                 if (User.isDuplicateUser(username)) {
                     System.out.println("Sorry, that username is taken.");
                 } else { // register user
-                    theUser = new User(username, password);
+                    theUser = new User(username, securePassword);
+                    //userInfoSaveSuccess = theUser.saveUsernameAndPassword();
                     if (theUser.saveUsernameAndPassword()) {
                         System.out.println("Username, password successfuly "
                                 + "created.");
@@ -344,4 +370,64 @@ public class ProgramDriver {
         keyboard.nextLine(); // purge input buffer
         return theUser;
     }
+    
+    //this method takes a string and encrypts it
+    //by using the getSalt() and hash() methods then returns an
+    //encrypted String
+    public static String encrypt(String textToEncrypt) {
+        byte[] salt = getSalt();
+        byte[] hash = hash(textToEncrypt.toCharArray(), salt);
+        String hashString = hash.toString();
+        return hashString;
+    }
+    
+    //this method returns 16 byte random salt value
+    public static byte[] getSalt() {
+        byte[] salt = new byte[16];
+        RANDOM.nextBytes(salt);
+        return salt;
+    }
+    
+    //this method returns a hashed and salted password
+    public static byte[] hash(char[] password, byte[] salt) {
+        PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
+        Arrays.fill(password, Character.MIN_VALUE);
+        
+        try {
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            return skf.generateSecret(spec).getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new AssertionError("Error while hashing a password: " + e.getMessage(), e);
+        } finally {
+            spec.clearPassword();
+        }
+    
+    }
+    
+    //this method generates a password 
+     public static String generateSecurePassword(String password, String salt) {
+        String returnValue = null;
+
+        byte[] securePassword = hash(password.toCharArray(), salt.getBytes());
+ 
+        returnValue = Base64.getEncoder().encodeToString(securePassword);
+ 
+        return returnValue;
+    }
+     
+    //this method verifies users password
+    public static boolean verifyUserPassword(String providedPassword, 
+                                             String securedPassword, 
+                                             String salt) {
+        boolean returnValue = false;
+        
+        //generate new secure password with the same salt value
+        String newSecurePassword = generateSecurePassword(providedPassword, salt);
+        
+        //check if two passwords are the same
+        returnValue = newSecurePassword.equalsIgnoreCase(securedPassword);
+        
+        return returnValue;
+    }
+    
 }
