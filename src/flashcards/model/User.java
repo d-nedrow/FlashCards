@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +55,14 @@ public class User {
     public void deleteSubject(Subject subject) {
         subjects.remove(subject);
         numSubjects--;
+    }
+    
+    /**
+     * Returns the given users username.
+     * @return Username
+     */
+    public String getUsername() {
+        return username;
     }
 
     /**
