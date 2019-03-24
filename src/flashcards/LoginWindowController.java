@@ -31,10 +31,9 @@ import javafx.stage.Stage;
  */
 public class LoginWindowController implements Initializable {
     
-    @FXML
-    //private Label label;
-    private TextField userField, passField;
-    private String username, password;
+    
+    @FXML private TextField userField, passField;
+    @FXML private String username, password;
     
     @FXML
     private void handleLogin(ActionEvent event) {

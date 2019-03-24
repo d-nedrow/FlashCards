@@ -8,6 +8,7 @@ package flashcards;
 import flashcards.model.Subject;
 import flashcards.model.User;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -28,18 +29,18 @@ import javafx.scene.control.TextInputDialog;
  */
 public class MainWindowController implements Initializable {
     
-    @FXML
-    private Label welcomeLabel;
-    private ListView<Subject> listView;
-    private User user;
-    private ObservableList<Subject> items;
+    
+    @FXML private ListView<String> listView;
+    @FXML private Label welcomeLabel;
+    @FXML private User user;
+    @FXML private ObservableList<String> items;
 
     @FXML
     private void createNewSubject(ActionEvent event)
     {
         System.out.println("Creating new subject..."); // placeholder
         
-        TextInputDialog prompt = new TextInputDialog("walter");
+        TextInputDialog prompt = new TextInputDialog("Enter Subject");
         prompt.setTitle("Create new Subject");
         prompt.setContentText("Enter Subject Name:");
         
@@ -53,7 +54,8 @@ public class MainWindowController implements Initializable {
             System.out.println("No input detected."); // done
         }
         
-        //user.saveUserState(); causing duplicates
+        user.saveUserState();
+        populateListView();
     }
     
     @FXML
@@ -70,18 +72,23 @@ public class MainWindowController implements Initializable {
     public void setUser(User user)
     {
         this.user = user;
-        user.loadUserState();
         welcomeLabel.setText("Welcome, " + user.getUsername()); // done
-        
-        //populateListView();
+        populateListView();
     }
     
     private void populateListView()
     {
         System.out.println("Starting population...");
-        items = FXCollections.observableArrayList(new Subject("Test Subject"));
-        listView = new ListView<>(items);
+        
+        ArrayList<String> subjects = new ArrayList();
+        for (Subject subj : user.getSubjects()) {
+            subjects.add(subj.getTitle());
+        }
+        
+        items = FXCollections.observableArrayList(subjects);
         listView.setItems(items);
+        
+        System.out.println("Done.");
         
         /* (items.isEmpty() || items == null) {
             listView.setPlaceholder(new Label("No subjects added."));
