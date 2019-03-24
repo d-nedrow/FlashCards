@@ -1,6 +1,7 @@
 package flashcards;
 
 import flashcards.drivers.ProgramDriver;
+import java.util.Scanner;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,7 +28,17 @@ public class Main extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        launch(args); // uncomment to allow GUI to launch
+        //launch(args); // uncomment to allow GUI to launch
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Enter 1 for Console Interface, 2 for GUI");
+        String input = reader.next();
+        if (input.equals("1")) {
+            ProgramDriver.testProgramWithConsoleInterface();
+            System.exit(0);
+        }
+        else {
+            launch(args);
+        }
         
         // test existing model classes with temporary console interface driver
         //ProgramDriver.testProgramWithConsoleInterface();

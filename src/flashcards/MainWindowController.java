@@ -83,7 +83,7 @@ public class MainWindowController implements Initializable {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setPadding(new Insets(150, 40, 30, 20));
 
         TextField question = new TextField();
         TextField answer = new TextField();
@@ -92,6 +92,11 @@ public class MainWindowController implements Initializable {
         grid.add(question, 1, 0);
         grid.add(new Label("Answer:"), 0, 1);
         grid.add(answer, 1, 1);
+        
+        grid.minHeight(640);
+        grid.minWidth(480);
+        
+        dialog.getDialogPane().setContent(grid);
         
         Platform.runLater(() -> question.requestFocus());
 
@@ -158,19 +163,17 @@ public class MainWindowController implements Initializable {
         ArrayList<String> subjects = new ArrayList(); // go through list
         for (Subject subj : user.getSubjects()) { // find current subject
             if (subj.getTitle().equals(curSubject)) { // find corresponding subject object
-                for (FlashCard card : subj.getFlashCards()) { // for each flashcard
+                for (FlashCard card : subj.getFlashCards()) { // for each flashcard in the subject
+                    GridPane grid = new GridPane(); // inner GridPane
+                    grid.setHgap(10);
+                    grid.setVgap(10);
+                    grid.setPadding(new Insets(10, 10, 10, 10));
                     
+                    Label question = new Label();
+                    TextField answer = new TextField();
+
+                    grid.add(new Label(), 0, 0); // ****START HERE****
                 }
-                GridPane grid = new GridPane(); // inner GridPane
-                grid.setHgap(10);
-                grid.setVgap(10);
-                grid.setPadding(new Insets(10, 10, 10, 10));
-                
-                Label question = new Label();
-                TextField answer = new TextField();
-                
-                grid.add(new Label(), 0, 0);
-                
             }
         }
     }
