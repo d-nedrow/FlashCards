@@ -18,7 +18,7 @@
       <Button layoutX="14.0" layoutY="549.0" mnemonicParsing="false" onAction="#addFlashCardBtn" text="Add FlashCard" />
       <Button layoutX="148.0" layoutY="549.0" mnemonicParsing="false" text="Remove FlashCard" />
       <Button layoutX="83.0" layoutY="664.0" mnemonicParsing="false" text="Reset FlashCards" />
-      <GridPane fx:id="flashcardPane" gridLinesVisible="true" layoutX="330.0" layoutY="20.0" prefHeight="675.0" prefWidth="920.0">
+      <GridPane fx:id="flashcardPane" layoutX="330.0" layoutY="20.0" prefHeight="675.0" prefWidth="920.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

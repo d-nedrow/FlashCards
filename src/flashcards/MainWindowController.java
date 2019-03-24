@@ -8,6 +8,7 @@ package flashcards;
 import flashcards.model.FlashCard;
 import flashcards.model.Subject;
 import flashcards.model.User;
+import java.awt.Color;
 import javafx.geometry.Insets;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
@@ -71,7 +74,7 @@ public class MainWindowController implements Initializable {
     }
     
     @FXML
-    private void addFlashCardBtn(ActionEvent event)
+    private void addFlashCardBtn(ActionEvent event) // BUG - if more than 2x3, adds to wrong subject
     {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Prompt");
@@ -93,9 +96,6 @@ public class MainWindowController implements Initializable {
         grid.add(new Label("Answer:"), 0, 1);
         grid.add(answer, 1, 1);
         
-        grid.minHeight(640);
-        grid.minWidth(480);
-        
         dialog.getDialogPane().setContent(grid);
         
         Platform.runLater(() -> question.requestFocus());
@@ -112,13 +112,17 @@ public class MainWindowController implements Initializable {
         result.ifPresent(questionAnswer -> {
             System.out.println("Question=" + questionAnswer.getKey() + ", Answer=" + questionAnswer.getValue());
             
-            ArrayList<String> subjects = new ArrayList(); // loop through list
+            //ArrayList<String> subjects = new ArrayList(); // loop through list
             for (Subject subj : user.getSubjects()) {
                 if (subj.getTitle().equals(curSubject)) { // find corresponding subject object
                     subj.addFlashCard(questionAnswer.getKey(), questionAnswer.getValue()); // add flash card to selected subject
                 }
             }
         });
+        
+        user.saveUserState(); // add flash card to file
+        clearCards();
+        populateFlashCards();
     }
     
     @FXML
@@ -160,22 +164,97 @@ public class MainWindowController implements Initializable {
     
     private void populateFlashCards()
     {
-        ArrayList<String> subjects = new ArrayList(); // go through list
-        for (Subject subj : user.getSubjects()) { // find current subject
-            if (subj.getTitle().equals(curSubject)) { // find corresponding subject object
-                for (FlashCard card : subj.getFlashCards()) { // for each flashcard in the subject
-                    GridPane grid = new GridPane(); // inner GridPane
-                    grid.setHgap(10);
-                    grid.setVgap(10);
-                    grid.setPadding(new Insets(10, 10, 10, 10));
-                    
-                    Label question = new Label();
-                    TextField answer = new TextField();
+        //int col = 0;
+        int row = 0;
+        //int count = 0;
+        
+        ArrayList<FlashCard> cardList = new ArrayList<>();
+        ArrayList<Subject> subjList = user.getSubjects();
+        //Subject subj = new Subject(curSubject);        
+        GridPane[] gridArr = new GridPane[20];
+        
+        final int MAXCOL = 2;
+        final int MAXROW = 3;
+        
+        for (Subject subj : subjList) // find current subject, inefficient
+        { 
+            if (subj.getTitle().equals(curSubject)) // find corresponding subject object
+            { 
+                cardList = subj.getFlashCards();
+                if (cardList.isEmpty()) 
+                {
+                    break;
+                }
+                else 
+                {
+                    int count = 0;
 
-                    grid.add(new Label(), 0, 0); // ****START HERE****
+                    for (FlashCard card : cardList) 
+                    {
+                        gridArr[count] = buildFlashCard(card);
+                        count++;
+                    }
+                    int pointer = 0;
+                    for (int col = 0; col <= MAXCOL; col++) {
+                        if (gridArr[pointer] == null) {
+                            break;
+                        }
+                        else if (col == MAXCOL) { // if bounds reached
+                            col = 0;
+                            row++;
+                            flashcardPane.add(gridArr[pointer], col, row); 
+                        } else {
+                            flashcardPane.add(gridArr[pointer], col, row); //throws NullPointer, fixable, check conditions
+                        }
+                        pointer++;
+                    }
+                    break;
                 }
             }
+            else 
+            {
+                System.out.println("Continuing search...");
+            }
+            
+            //for (int i = 0; i < subj.getNumFlashcards(); i++) { // outer loop, NTE this amount
+                
+            //break; // subject found, no need to revisit loop
         }
+        //System.out.println("CardList" + cardList.toString());    
+        /*for (int i = 0; i <= MAXCOL; i++) {
+            if (i == MAXCOL) {
+                i = 0; // reset col count
+                row++;
+                flashcardPane.add(grid, i, row);
+            } else {
+                flashcardPane.add(grid, i, row);
+            }
+        } */
+    }
+    
+    private void clearCards()
+    {
+        flashcardPane.getChildren().clear();
+        //flashcardPane.setGridLinesVisible(true); // nope
+    }
+    
+    // Helper method
+    private GridPane buildFlashCard(FlashCard card) {
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(10, 10, 10, 10));
+        
+        //grid.setStyle("-fx-background-color:#ffffff; -fx-border-style"); // later
+
+        TextField answer = new TextField();
+        Button checkBtn = new Button("Check Answer"); // handling code here
+
+        grid.add(new Label(card.getQuestion()), 0, 0);
+        grid.add(new Label("Answer:"), 1, 0);
+        grid.add(answer, 2, 0);
+        grid.add(checkBtn, 0, 1);
+        return grid;
     }
     
     @Override
@@ -188,6 +267,8 @@ public class MainWindowController implements Initializable {
             {
                 System.out.println("Selection: " + newSel); // on selection
                 curSubject = newSel;
+                // TODO: clear flashcard display
+                clearCards();
                 populateFlashCards();
             }
         });
