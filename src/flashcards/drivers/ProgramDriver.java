@@ -321,15 +321,16 @@ public class ProgramDriver {
                 username = keyboard.next();
                 System.out.print("Enter desired password: ");
                 password = keyboard.next();
-                String securePassword = encrypt(password); //encrypts password right after user types it
+                
+                // We are not currently ready to use the encrypt functionality
+                //String securePassword = encrypt(password);
                 
                 // check if username taken before user is registered
                 if (User.isDuplicateUser(username)) {
                     System.out.println("Sorry, that username is taken.");
                 } else { // register user
                     
-                    theUser = new User(username, securePassword);
-                    //userInfoSaveSuccess = theUser.saveUsernameAndPassword();
+                    theUser = new User(username, password);
                     if (theUser.saveUsernameAndPassword()) {
                         System.out.println("Username, password successfuly "
                                 + "created.");

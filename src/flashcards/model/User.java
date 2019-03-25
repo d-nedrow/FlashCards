@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class User {
 
     private String username, password;
-    private String salt;
+    private String salt; // not currently using password encrypt. Will later.
     private ArrayList<Subject> subjects;
     private int numSubjects;
 
@@ -206,7 +206,7 @@ public class User {
         try {
             output = new PrintWriter(userList);
             output.print(oldFileContents); // copy previous user list to file
-            output.println(username + " " + password + " "); // add this user
+            output.println(username + " " + password); // add this user
             output.close();
             return true; // username, password saved
         } catch (FileNotFoundException ex) {
