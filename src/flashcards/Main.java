@@ -30,7 +30,7 @@ public class Main extends Application {
     public static void main(String[] args) {
         //launch(args); // uncomment to allow GUI to launch
         Scanner reader = new Scanner(System.in);
-        System.out.println("Enter 1 for Console Interface, 2 for GUI");
+        System.out.print("Enter 1 for Console Interface, 2 for GUI ");
         String input = reader.next();
         if (input.equals("1")) {
             ProgramDriver.testProgramWithConsoleInterface();

@@ -66,20 +66,21 @@ public class Subject {
     public int getNumFlashcards() {
         return numFlashcards;
     }
+
     /**
-     * cycles through the array list
-     * clearing each card's score
+     * cycles through the array list clearing each card's score
      */
     public void resetFlashcards() {
-        for(FlashCard card: flashcards) {
+        for (FlashCard card : flashcards) {
             card.resetScore();
         }
     }
-    
+
     public void removeFlashcard(FlashCard card) {
         flashcards.remove(card);
         numFlashcards--;
     }
+
     public void shuffleFlashcards() {
         Collections.shuffle(flashcards);
     }
