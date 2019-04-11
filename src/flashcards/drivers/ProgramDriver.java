@@ -3,6 +3,7 @@ package flashcards.drivers;
 import flashcards.model.FlashCard;
 import flashcards.model.Subject;
 import flashcards.model.User;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -14,6 +15,8 @@ import java.util.Base64;
 import java.util.Random;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Driver class which currently tests FlashCard, Subject, and User classes tied
@@ -44,16 +47,22 @@ public class ProgramDriver {
 
         // keep running program until user selects "Quit" from outer menu
         while (true) {
-            System.out.println("\nWould you like to choose a subject, delete a subject, or quit?\n"
-                    + "1. Choose Subject\n2. Delete Subject\n3. Quit");
+            System.out.println("\nWould you like to choose a subject, read a "
+                    + "new subject from a file, delete a subject, or quit?\n"
+                    + "1. Choose Subject\n2. Read Subject From File \n3. Delete"
+                    + " Subject\n4. Quit");
             System.out.print("Enter the number of the option you want: ");
             option = Integer.parseInt(keyboard.nextLine());
 
-            if (option != 1 && option != 2) { // user chose to quit, so exit loop
+            if (option > 3 || option < 1) { // user chose to quit, so exit loop
                 break;
             }
 
             if (option == 2) {
+                readSubjectFromFile(theUser);
+            }
+
+            if (option == 3) {
                 deleteSubject(theUser);
             }
 
@@ -364,6 +373,32 @@ public class ProgramDriver {
 
         keyboard.nextLine(); // purge input buffer
         return theUser;
+    }
+
+    /**
+     * Creates a dialog window to choose a file from which a new subject will be
+     * created for this user.
+     *
+     * @param theUser the user to add a subject to
+     */
+    public static void readSubjectFromFile(User theUser) {
+        JFileChooser chooser = new JFileChooser(System.getProperty("user.dir")
+                + "/subjectFiles");
+        System.out.println("\nYou may need to minimize windows to see the "
+                + "file chooser.");
+        chooser.setFileFilter(new FileNameExtensionFilter("Text files", "txt"));
+        
+        int result = chooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = chooser.getSelectedFile();
+            Subject subject = Subject.createSubjectFromFile(selectedFile);
+            theUser.addSubject(subject);
+            String fileName = selectedFile.getName();
+            System.out.println("Subject: \"" + subject.getTitle() + "\" "
+                    + "created from " + fileName);
+        } else {
+            System.out.println("You cancelled the file dialog");
+        }
     }
 
     //this method takes a string and encrypts it
