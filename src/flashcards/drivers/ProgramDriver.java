@@ -12,6 +12,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Random;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -121,7 +122,7 @@ public class ProgramDriver {
     public static void practice(Subject subject) {
         ArrayList<FlashCard> flashcards = subject.getFlashCards();
         int numFlashcards = subject.getNumFlashcards();
-        int gradingChoice;
+        int gradingChoice = 0;
         String answer;
         char result;
         boolean correctness;
@@ -139,8 +140,24 @@ public class ProgramDriver {
                 + "check the answer for us?");
         System.out.println("1. Please check my answer.\n2. I'll check it "
                 + "myself.");
+        System.out.println("3. Generate multiple-choice questions for me to"
+                + " answer.");
         System.out.print("Enter the number of the option you want: ");
         gradingChoice = Integer.parseInt(keyboard.nextLine());
+
+        if (gradingChoice == 3){
+            if (numFlashcards < 4) {  //if less than 4 cards then return to last 
+                System.out.println("\n\nYou need at least 4 flash cards in this "
+                        + "subject to use this...");
+                System.out.println("You only have " + numFlashcards + 
+                        " flashcards");
+                System.out.println("You will be redirected to the prior menu \n");
+                return; 
+            }else{
+                generateMultChoice(subject);
+            }
+            return;
+        }
 
         int flashcardIndex = 0;
         // continue asking FlashCard questions until user types "quit" as answer
@@ -197,6 +214,132 @@ public class ProgramDriver {
             flashcardIndex++; // prepare to ask question from next flash card
         } // end while loop of continuous flash card questions
     } // end practice method
+
+     /**generateMultChoice-this method can be called by the user from the 
+     * practice method as option 3.  It generates 3 random answers for the user
+     * to select from and a randomly placed correct answer.  
+     * 
+     * @param subject- allows flash cards to only be referenced from user 
+     * selected subject.  
+     * @author: William (Dave) Kiger
+     */
+    public static void generateMultChoice(Subject subject){
+        ArrayList<FlashCard> flashcards = subject.getFlashCards();
+        int numFlashcards = subject.getNumFlashcards();
+        String wrongAnswer = "wrong123";//force a wrong answer
+        FlashCard flashcard;
+        int flashcardIndex = 0;
+                
+        System.out.println("Type 'quit' at any point to quit.");
+
+        while(true){     
+            if (flashcardIndex > numFlashcards) {
+                System.out.println("You have gone through all the subject "
+                        + "questions type QUIT to stop. ");
+            }
+            
+            // cycle through the flashcard array, don't go out-of-bounds
+            flashcard = flashcards.get(flashcardIndex % numFlashcards);
+
+            System.out.println("\n" + flashcard.getQuestion());//print question
+           
+            String correctAns = flashcard.getAnswer();//store correct answer
+            
+            Random rand = new Random();  
+            
+            //create randomElements1-3 to display as wrong answers
+            FlashCard randomElement1 = flashcards.get(rand.nextInt(
+                    numFlashcards));
+            String randans1 = randomElement1.getAnswer();
+            while(true){
+                if (correctAns.equals(randans1)){//check for unique value
+                    randomElement1 = flashcards.get(rand.nextInt(
+                            numFlashcards));
+                    randans1 = randomElement1.getAnswer();
+                }else{break;}
+            }
+
+            FlashCard randomElement2 = flashcards.get(rand.nextInt(
+                    numFlashcards));
+            String randans2 = randomElement2.getAnswer();
+            while(true){
+                if (correctAns.equals(randans1)|| correctAns.equals(randans2) ||
+                        randans1.equals(randans2)){//check for unique value
+                    randomElement2 = flashcards.get(rand.nextInt(
+                            numFlashcards));
+                    randans2 = randomElement2.getAnswer();
+                    
+                }else{break;}
+            }
+            
+            FlashCard randomElement3 = flashcards.get(rand.nextInt(
+                    numFlashcards));
+            String randans3 = randomElement3.getAnswer();
+            while(true){
+                if (correctAns.equals(randans1)|| correctAns.equals(randans2) ||
+                        correctAns.equals(randans3) || randans1.equals(randans2)
+                        || randans1.equals(randans3) || randans2.equals(
+                        randans3)){//check for unique value
+                    randomElement3 = flashcards.get(rand.nextInt(
+                            numFlashcards));
+                    randans3 = randomElement3.getAnswer();
+                }else{break;}
+            }
+
+            //create arraylist and add wrong answers to that list
+            ArrayList<String> temp = new ArrayList<>();
+            temp.add(randans1);
+            temp.add(randans2);
+            temp.add(randans3);
+            temp.add(correctAns);
+            
+            Collections.shuffle(temp);
+            
+            //generate random answers (1 correct, 3 wrong)
+            int count1 = 0; 
+            int i = 1; 
+            while (temp.size() > count1){
+                System.out.println(i + ". " + temp.get(count1));
+                count1 ++; 
+                i++;
+            }
+
+            System.out.println("What is your choice? ");
+            String in = keyboard.nextLine();
+            
+            if (in.equalsIgnoreCase("QUIT")) {//exit 
+                break; 
+            }
+            
+            while(!in.matches("[1-4]")){//regex test in must be 1-4
+                System.out.println("You must enter 1-4. Try again!");
+                in = keyboard.nextLine(); 
+            }
+
+            int inputInt = 0; 
+            try{//safely parse integer
+                inputInt = Integer.parseInt(in);
+            }catch(NumberFormatException e){
+                System.out.println("You need to need to enter a number..." + 
+                        e);}
+            
+            if(correctAns.equals(temp.get(inputInt-1))){//posthole correction 
+                System.out.println("You are correct!");
+                flashcard.autoCheckCorrect(correctAns);
+            }else{
+                System.out.println("Try again next time, the answer was " + 
+                        correctAns);  
+                flashcard.autoCheckCorrect(wrongAnswer);
+            }
+            
+            System.out.printf("Lifetime Percent Correct = %.2f%%\n",
+            flashcard.getPercentCorrect());
+            System.out.printf("Last 5 Attempts Percent Correct = %.2f%%\n",
+            flashcard.getPercentCorrectLast5());
+
+            flashcardIndex++; 
+        }//end while loop 
+    }
 
     /**
      * Continuously add new FlashCards to a subject until user wants to stop.
