@@ -215,7 +215,7 @@ public class ProgramDriver {
         } // end while loop of continuous flash card questions
     } // end practice method
 
-        /**generateMultChoice-this method can be called by the user from the 
+     /**generateMultChoice-this method can be called by the user from the 
      * practice method as option 3.  It generates 3 random answers for the user
      * to select from and a randomly placed correct answer.  
      * 
