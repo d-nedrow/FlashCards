@@ -1,6 +1,10 @@
 package flashcards.model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 /**
  * A class which models a subject or topic to be filled with FlashCards.
@@ -64,5 +68,52 @@ public class Subject {
      */
     public int getNumFlashcards() {
         return numFlashcards;
+    }
+
+    /**
+     * cycles through the array list clearing each card's score
+     */
+    public void resetFlashcards() {
+        for (FlashCard card : flashcards) {
+            card.resetScore();
+        }
+    }
+
+    public void removeFlashcard(FlashCard card) {
+        flashcards.remove(card);
+        numFlashcards--;
+    }
+
+    public void shuffleFlashcards() {
+        Collections.shuffle(flashcards);
+    }
+
+    /**
+     * Creates a new subject filled with flash cards by reading a properly-
+     * formatted file (specified as the parameter).
+     *
+     * @param subjectFile the specified file to read
+     * @return the new subject created by reading the file
+     */
+    public static Subject createSubjectFromFile(File subjectFile) {
+        String[] questionAnswer;
+        Subject subject;
+        String title;
+
+        try {
+            Scanner input = new Scanner(subjectFile);
+            title = input.nextLine();
+            subject = new Subject(title);
+
+            while (input.hasNextLine()) {
+                questionAnswer = input.nextLine().split("@DL");
+                subject.addFlashCard(questionAnswer[0].trim(),
+                        questionAnswer[1].trim());
+            }
+
+            return subject;
+        } catch (FileNotFoundException ex) {
+            return null;
+        }
     }
 }
