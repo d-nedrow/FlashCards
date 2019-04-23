@@ -126,9 +126,18 @@ public class MainWindowController implements Initializable {
     }
     
     @FXML
-    private void refreshListBtn(ActionEvent event)
-    {
+    private void deleteSubjectBtn(ActionEvent event)
+    {    
+        user.deleteSubject(curSubject);
+        user.saveUserState();
         populateListView();
+    }
+    
+    @FXML
+    private void refreshSubjectList(ActionEvent event)
+    {    
+        populateListView();
+        user.saveUserState();
     }
     
     @FXML
