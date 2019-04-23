@@ -23,7 +23,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -49,13 +52,14 @@ public class MainWindowController implements Initializable {
     
     @FXML private ListView<String> listView;
     @FXML private Label welcomeLabel;
-    @FXML private Label cardInfoLabel;
+    @FXML private Label totAttemptLabel, corAttemptLabel, incAttemptLabel;
     @FXML private Label flashcardNumLabel;
     @FXML private User user;
     @FXML private ObservableList<String> items;
     @FXML private ArrayList<FlashCard> flashcardList;
     @FXML private String curSubject;
     @FXML private BorderPane flashcardPane;
+    @FXML private VBox flashcardDisplayBox;
     
     private int flashcardListPtr = 0;
 
@@ -129,11 +133,43 @@ public class MainWindowController implements Initializable {
         });
         
         user.saveUserState(); // add flash card to file
+        displayCards();
         //clearCards(); // will not change the display
         //populateFlashCards();
     }
     /**
-     * TODO: Fix these methods to throw errors properly
+     * Removes a flashcard from the list.
+     * @param event 
+     */
+    // TODO: fix exception
+    @FXML
+    private void removeFlashcardBtn(ActionEvent event)
+    {
+        if (!flashcardList.isEmpty()) 
+        {
+            for (Subject subj : user.getSubjects()) 
+            {
+                if (subj.getTitle().equals(curSubject)) 
+                {
+                    subj.removeFlashcard(flashcardList.get(flashcardListPtr));
+                    break;
+                }
+            }
+            user.saveUserState();
+            displayCards();
+        }
+        else
+        {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Sorry, something went wrong.");
+            alert.setContentText("The list is empty - no flashcards can be removed.");
+
+            alert.showAndWait();
+        }
+    }
+    /**
+     * Cycles to the next card in the list.
      * @param event 
      */
     @FXML
@@ -224,56 +260,54 @@ public class MainWindowController implements Initializable {
     
     // Helper method
     private VBox buildFlashCard(FlashCard card) {
-        VBox vbox = new VBox(15);
-        vbox.setSpacing(15);
-        vbox.setPadding(new Insets(200, 50, 200, 50));
+        flashcardDisplayBox = new VBox(15); // spacing between children
+        flashcardDisplayBox.setPadding(new Insets(100, 50, 180, 50));
+        flashcardDisplayBox.setAlignment(Pos.CENTER);
         
         Label question = new Label(card.getQuestion());
         TextField answer = new TextField();
         Button checkBtn = new Button("Check Answer");
-        checkBtn.setOnAction(new EventHandler<ActionEvent>() 
+        checkBtn.setOnAction((ActionEvent event) -> 
         {
-            @Override
-            public void handle(ActionEvent event) 
+            System.out.println("Validating answer...");
+            
+            if (card.autoCheckCorrect(answer.getText())) 
             {
-                System.out.println("Validating answer...");
-                
-                if (card.autoCheckCorrect(answer.getText()))
-                {
-                    System.out.println("Correct answer!");
-                    // TODO: Update card information, cardInfoLabel
-                    displayFlashCardInfo(card);
-                }
-                else
-                {
-                    System.out.println("Incorrect answer!");
-                    displayFlashCardInfo(card);
-                }
-                // TODO: add handling code
+                System.out.println("Correct answer!");
+                displayFlashCardInfo(card);
+            }
+            else
+            {
+                System.out.println("Incorrect answer!");
+                displayFlashCardInfo(card);
             }
         });
         
         flashcardNumLabel.setText("Flashcard " + (flashcardListPtr + 1) + " of " + flashcardList.size());
         
         displayFlashCardInfo(card);
-        
-        vbox.getChildren().addAll(question, answer, checkBtn);
-        return vbox;
+        VBox.setMargin(question, new Insets(0, 0, 70, 0));
+        flashcardDisplayBox.getChildren().addAll(question, answer, checkBtn);
+        return flashcardDisplayBox;
     }
     
     private void displayFlashCardInfo(FlashCard card)
     {
+        totAttemptLabel.setText("Total Attempts: " + card.getNumAttempts());
+        corAttemptLabel.setText("Correct Attempts: " + card.getNumCorrect());
+        incAttemptLabel.setText("Incorrect Attempts: " + card.getNumIncorrect());
+        
         /*if (card == null) 
         {
             cardInfoLabel.setText("No flashcard in focus.");
         }
         else
         { */
-            int nAttempts = card.getNumAttempts();
+            /*int nAttempts = card.getNumAttempts();
             int cAttempts = card.getNumCorrect();
             int iAttempts = card.getNumIncorrect();
             cardInfoLabel.setText("Total Attempts: " + nAttempts + "\nCorrect Attempts: " + cAttempts
-                    + "\nIncorrect Attempts: " + iAttempts);
+                    + "\nIncorrect Attempts: " + iAttempts); */
         //}
     }
     
