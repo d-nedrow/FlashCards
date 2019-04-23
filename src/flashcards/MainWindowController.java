@@ -20,6 +20,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -32,7 +33,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 
 /**
@@ -45,10 +49,15 @@ public class MainWindowController implements Initializable {
     
     @FXML private ListView<String> listView;
     @FXML private Label welcomeLabel;
+    @FXML private Label cardInfoLabel;
+    @FXML private Label flashcardNumLabel;
     @FXML private User user;
     @FXML private ObservableList<String> items;
+    @FXML private ArrayList<FlashCard> flashcardList;
     @FXML private String curSubject;
-    @FXML private GridPane flashcardPane;
+    @FXML private BorderPane flashcardPane;
+    
+    private int flashcardListPtr = 0;
 
     @FXML
     private void createNewSubjectBtn(ActionEvent event)
@@ -86,7 +95,7 @@ public class MainWindowController implements Initializable {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(150, 40, 30, 20));
+        grid.setPadding(new Insets(40, 40, 30, 20));
 
         TextField question = new TextField();
         TextField answer = new TextField();
@@ -112,7 +121,6 @@ public class MainWindowController implements Initializable {
         result.ifPresent(questionAnswer -> {
             System.out.println("Question=" + questionAnswer.getKey() + ", Answer=" + questionAnswer.getValue());
             
-            //ArrayList<String> subjects = new ArrayList(); // loop through list
             for (Subject subj : user.getSubjects()) {
                 if (subj.getTitle().equals(curSubject)) { // find corresponding subject object
                     subj.addFlashCard(questionAnswer.getKey(), questionAnswer.getValue()); // add flash card to selected subject
@@ -121,14 +129,25 @@ public class MainWindowController implements Initializable {
         });
         
         user.saveUserState(); // add flash card to file
-        clearCards();
-        populateFlashCards();
+        //clearCards(); // will not change the display
+        //populateFlashCards();
+    }
+    /**
+     * TODO: Fix these methods to throw errors properly
+     * @param event 
+     */
+    @FXML
+    private void nextCardBtn(ActionEvent event)
+    {
+        flashcardListPtr++;
+        displayCards();
     }
     
     @FXML
-    private void refreshListBtn(ActionEvent event)
+    private void prevCardBtn(ActionEvent event) 
     {
-        populateListView();
+        flashcardListPtr--;
+        displayCards();
     }
     
     @FXML
@@ -145,8 +164,6 @@ public class MainWindowController implements Initializable {
     
     private void populateListView()
     {
-        System.out.println("Starting population...");
-        
         ArrayList<String> subjects = new ArrayList();
         for (Subject subj : user.getSubjects()) {
             subjects.add(subj.getTitle());
@@ -154,124 +171,130 @@ public class MainWindowController implements Initializable {
         
         items = FXCollections.observableArrayList(subjects);
         listView.setItems(items);
-        
-        System.out.println("Done.");
-        
-        /* (items.isEmpty() || items == null) {
+
+         if (items.isEmpty() || items == null) {
             listView.setPlaceholder(new Label("No subjects added."));
-        } */
+        }
     }
     
-    private void populateFlashCards()
+    private void populateFlashCards() // new method
     {
-        //int col = 0;
-        int row = 0;
-        //int count = 0;
-        
-        ArrayList<FlashCard> cardList = new ArrayList<>();
+        flashcardList = new ArrayList<>();
         ArrayList<Subject> subjList = user.getSubjects();
-        //Subject subj = new Subject(curSubject);        
-        GridPane[] gridArr = new GridPane[20];
         
-        final int MAXCOL = 2;
-        final int MAXROW = 3;
-        
-        for (Subject subj : subjList) // find current subject, inefficient
-        { 
-            if (subj.getTitle().equals(curSubject)) // find corresponding subject object
-            { 
-                cardList = subj.getFlashCards();
-                if (cardList.isEmpty()) 
-                {
-                    break;
-                }
-                else 
-                {
-                    int count = 0;
-
-                    for (FlashCard card : cardList) 
-                    {
-                        gridArr[count] = buildFlashCard(card);
-                        count++;
-                    }
-                    int pointer = 0;
-                    for (int col = 0; col <= MAXCOL; col++) {
-                        if (gridArr[pointer] == null) {
-                            break;
-                        }
-                        else if (col == MAXCOL) { // if bounds reached
-                            col = 0;
-                            row++;
-                            flashcardPane.add(gridArr[pointer], col, row); 
-                        } else {
-                            flashcardPane.add(gridArr[pointer], col, row); //throws NullPointer, fixable, check conditions
-                        }
-                        pointer++;
-                    }
-                    break;
-                }
-            }
-            else 
+        for (Subject subj : subjList) 
+        {
+            if (subj.getTitle().equals(curSubject)) 
             {
-                System.out.println("Continuing search...");
+                flashcardList = subj.getFlashCards();
+                break;
+            }
+        }
+    }
+    private void displayCards()
+    {
+        if (!flashcardList.isEmpty()) 
+        {
+            if (flashcardListPtr <= 0) // using the prev button, prevents out of bounds
+            {
+                flashcardListPtr = 0;
+                flashcardPane.setCenter(buildFlashCard(flashcardList.get(flashcardListPtr)));
+            }
+            else if (flashcardListPtr >= flashcardList.size()) 
+            {
+                flashcardListPtr = flashcardList.size() - 1;
+                flashcardPane.setCenter(buildFlashCard(flashcardList.get(flashcardListPtr)));
+            }
+            else
+            {
+                flashcardPane.setCenter(buildFlashCard(flashcardList.get(flashcardListPtr))); // gets the first flashcard in the list, use ptr to remember?
             }
             
-            //for (int i = 0; i < subj.getNumFlashcards(); i++) { // outer loop, NTE this amount
-                
-            //break; // subject found, no need to revisit loop
         }
-        //System.out.println("CardList" + cardList.toString());    
-        /*for (int i = 0; i <= MAXCOL; i++) {
-            if (i == MAXCOL) {
-                i = 0; // reset col count
-                row++;
-                flashcardPane.add(grid, i, row);
-            } else {
-                flashcardPane.add(grid, i, row);
-            }
-        } */
+        else
+        {
+            flashcardPane.setCenter(new Label("No flashcards in the list!"));
+        }
     }
     
     private void clearCards()
     {
-        flashcardPane.getChildren().clear();
-        //flashcardPane.setGridLinesVisible(true); // nope
-    }
+        flashcardPane.setCenter(null);
+    }    
     
     // Helper method
-    private GridPane buildFlashCard(FlashCard card) {
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(10, 10, 10, 10));
+    private VBox buildFlashCard(FlashCard card) {
+        VBox vbox = new VBox(15);
+        vbox.setSpacing(15);
+        vbox.setPadding(new Insets(200, 50, 200, 50));
         
-        //grid.setStyle("-fx-background-color:#ffffff; -fx-border-style"); // later
-
+        Label question = new Label(card.getQuestion());
         TextField answer = new TextField();
-        Button checkBtn = new Button("Check Answer"); // handling code here
-
-        grid.add(new Label(card.getQuestion()), 0, 0);
-        grid.add(new Label("Answer:"), 1, 0);
-        grid.add(answer, 2, 0);
-        grid.add(checkBtn, 0, 1);
-        return grid;
+        Button checkBtn = new Button("Check Answer");
+        checkBtn.setOnAction(new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle(ActionEvent event) 
+            {
+                System.out.println("Validating answer...");
+                
+                if (card.autoCheckCorrect(answer.getText()))
+                {
+                    System.out.println("Correct answer!");
+                    // TODO: Update card information, cardInfoLabel
+                    displayFlashCardInfo(card);
+                }
+                else
+                {
+                    System.out.println("Incorrect answer!");
+                    displayFlashCardInfo(card);
+                }
+                // TODO: add handling code
+            }
+        });
+        
+        flashcardNumLabel.setText("Flashcard " + (flashcardListPtr + 1) + " of " + flashcardList.size());
+        
+        displayFlashCardInfo(card);
+        
+        vbox.getChildren().addAll(question, answer, checkBtn);
+        return vbox;
+    }
+    
+    private void displayFlashCardInfo(FlashCard card)
+    {
+        /*if (card == null) 
+        {
+            cardInfoLabel.setText("No flashcard in focus.");
+        }
+        else
+        { */
+            int nAttempts = card.getNumAttempts();
+            int cAttempts = card.getNumCorrect();
+            int iAttempts = card.getNumIncorrect();
+            cardInfoLabel.setText("Total Attempts: " + nAttempts + "\nCorrect Attempts: " + cAttempts
+                    + "\nIncorrect Attempts: " + iAttempts);
+        //}
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) { // basically a constructor
         System.out.println("The MWC is being initialized...");
         listView.getSelectionModel().selectedItemProperty().addListener(
-                new ChangeListener<String>() {
-            public void changed(ObservableValue<? extends String> ov,
-                    String oldSel, String newSel) 
-            {
-                System.out.println("Selection: " + newSel); // on selection
-                curSubject = newSel;
-                // TODO: clear flashcard display
-                clearCards();
-                populateFlashCards();
-            }
-        });
+                new ChangeListener<String>() 
+                {
+                    public void changed(ObservableValue<? extends String> ov,
+                            String oldSel, String newSel) 
+                        {
+                            // *** Program Flow *** TODO: change method names
+                            curSubject = newSel; // User selects a subject from the list, selection is set
+                            flashcardListPtr = 0; // reset pointer
+                            clearCards(); // Clear card already displayed, if any
+                            populateFlashCards(); // Populate flash card list from chosen subject above
+                            displayCards(); // Display first card of the new list
+                            //displayFlashCardInfo(null);
+                        }
+                });
         System.out.println("MWC done.");
     }  
 }
