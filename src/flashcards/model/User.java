@@ -1,10 +1,14 @@
 package flashcards.model;
 
+import static flashcards.drivers.ProgramDriver.verifyUserPassword;
+import static flashcards.drivers.ProgramDriver.generateSecurePassword;
+import static flashcards.drivers.ProgramDriver.hash;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +24,7 @@ public class User {
 
     private String username, password;
     private String salt; // not currently using password encrypt. Will later.
+    private String encryptedPassword;
     private ArrayList<Subject> subjects;
     private int numSubjects;
 
@@ -32,7 +37,6 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        //this.salt = salt;
         subjects = new ArrayList<>();
     }
 
@@ -74,16 +78,22 @@ public class User {
         return numSubjects;
     }
 
-    /**
-     * sets salt
-     */
+    //set encrypted password
+    public void setEncryptedPassword(String encryptedPassword) {
+        this.encryptedPassword = encryptedPassword;
+    }
+    
+    //get encrypted password
+    public String getEncryptedPassword() {
+        return this.encryptedPassword;
+    }
+    
+    //set salt
     public void setSalt(String salt) {
         this.salt = salt;
     }
 
-    /**
-     * get salt
-     */
+    //get salt
     public String getSalt() {
         return this.salt;
     }
@@ -208,7 +218,8 @@ public class User {
         try {
             output = new PrintWriter(userList);
             output.print(oldFileContents); // copy previous user list to file
-            output.println(username + " " + password); // add this user
+            output.println(username + " " + salt + " " + encryptedPassword); //add this user 
+            //output.println(username + " " + password); // add this user
             output.close();
             return true; // username, password saved
         } catch (FileNotFoundException ex) {
@@ -236,11 +247,22 @@ public class User {
             while (input.hasNextLine()) {
                 usernamePasswordEntry = input.nextLine().split(" ");
                 if (typedUsername.equals(usernamePasswordEntry[0])) {
+                    
+                    if (verifyUserPassword(typedPassword, 
+                                           usernamePasswordEntry[1], 
+                                           usernamePasswordEntry[2])) {
+                        theUser = new User(typedUsername, typedPassword);
+                        theUser.loadUserState(); // load user's flash cards etc.
+                        return theUser;
+                    }
+                           
+                    /* OLD CODE
                     if (typedPassword.equals(usernamePasswordEntry[1])) {
                         theUser = new User(typedUsername, typedPassword);
                         theUser.loadUserState(); // load user's flash cards etc.
                         return theUser;
                     }
+                    */
                 }
             }
 
@@ -275,4 +297,5 @@ public class User {
 
         return oldFileContents;
     }
+    
 }
