@@ -479,12 +479,21 @@ public class ProgramDriver {
 
                 // We are not currently ready to use the encrypt functionality
                 //String securePassword = encrypt(password);
+                
+                byte[] salt = getSalt();
+                System.out.println("salt: " + salt);
+                String encryptedPassword = generateSecurePassword(password, salt.toString());
+                System.out.println("secure password: " + encryptedPassword);
+
                 // check if username taken before user is registered
                 if (User.isDuplicateUser(username)) {
                     System.out.println("Sorry, that username is taken.");
                 } else { // register user
 
                     theUser = new User(username, password);
+                    theUser.setSalt(salt.toString());
+                    theUser.setEncryptedPassword(encryptedPassword);
+                    
                     if (theUser.saveUsernameAndPassword()) {
                         System.out.println("Username, password successfuly "
                                 + "created.");
@@ -549,6 +558,7 @@ public class ProgramDriver {
     //encrypted String
     public static String encrypt(String textToEncrypt) {
         byte[] salt = getSalt(); //generate salt
+        System.out.println("salt: " + salt);
         byte[] hash = hash(textToEncrypt.toCharArray(), salt);
         String hashString = "";
         for (int i = 0; i < hash.length; i++) {
@@ -593,8 +603,8 @@ public class ProgramDriver {
 
     //this method verifies users password
     public static boolean verifyUserPassword(String providedPassword,
-            String securedPassword,
-            String salt) {
+            String salt,
+            String securedPassword) {
         boolean returnValue = false;
 
         //generate new secure password with the same salt value
