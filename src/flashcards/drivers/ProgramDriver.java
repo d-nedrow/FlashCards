@@ -3,8 +3,20 @@ package flashcards.drivers;
 import flashcards.model.FlashCard;
 import flashcards.model.Subject;
 import flashcards.model.User;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Random;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Driver class which currently tests FlashCard, Subject, and User classes tied
@@ -18,65 +30,81 @@ public class ProgramDriver {
 
     static Scanner keyboard = new Scanner(System.in);
 
+    //variables for encryption
+    private static final Random RANDOM = new SecureRandom();
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int ITERATIONS = 10000;
+    private static final int KEY_LENGTH = 256;
+
     /**
      * The "main" method of this class, to be invoked by project's Main class.
      * Centralizes console-interface testing of current FlashCard project.
      */
     public static void testProgramWithConsoleInterface() {
+
         User theUser = registerOrLogin(); // get user to register or login
         int option; // reusable variable to store user's console selections
 
         // keep running program until user selects "Quit" from outer menu
         while (true) {
-            System.out.println("\nWould you like to choose a subject, delete a subject, or quit?\n"
-                    + "1. Choose Subject\n2. Delete Subject\n3. Quit");
+            System.out.println("\nWould you like to choose a subject, read a "
+                    + "new subject from a file, delete a subject, or quit?\n"
+                    + "1. Choose Subject\n2. Read Subject From File \n3. Delete"
+                    + " Subject\n4. Quit");
             System.out.print("Enter the number of the option you want: ");
             option = Integer.parseInt(keyboard.nextLine());
 
-            if (option != 1 && option != 2) { // user chose to quit, so exit loop
+            if (option > 3 || option < 1) { // user chose to quit, so exit loop
                 break;
             }
-            
+
             if (option == 2) {
+                readSubjectFromFile(theUser);
+            }
+
+            if (option == 3) {
                 deleteSubject(theUser);
             }
 
             // get user to choose or create a subject to work with
-            if(option == 1) {
+            if (option == 1) {
                 Subject subject = chooseSubject(theUser);
                 if (subject == null) {
                     break; // user didn't want to choose a subject, time to quit
                 }
-            
 
-            System.out.println("You have chosen " + subject.getTitle());
+                System.out.println("You have chosen " + subject.getTitle());
 
-            // user chooses to add flashcards, practice within this subject, or reset all of their scores
-            thisSubject:
-            while (true) {
-                System.out.println("\nWould you like to add flashcards or "
-                        + "practice?\n1. Add flashcards\n2. Practice\n3. Delete flashcards\n4. Reset Score\n5. Return"
-                        + " to previous menu");
-                System.out.print("Enter the number of the option you want: ");
-                option = Integer.parseInt(keyboard.nextLine());
+                // user chooses to add flashcards, practice within this subject, or reset all of their scores
+                thisSubject:
+                while (true) {
+                    System.out.println("\nWould you like to add flashcards or "
+                            + "practice?\n1. Add flashcards\n2. Practice\n3. Delete flashcards\n4. Reset Score\n5. Return"
+                            + " to previous menu");
+                    System.out.print("Enter the number of the option you want: ");
+                    option = Integer.parseInt(keyboard.nextLine());
 
-                switch (option) {
-                    case 1:
-                        addFlashCards(subject);
-                        break;
-                    case 2:
-                        practice(subject);
-                        break;
-                    case 3:
-                        removeFlashCard(subject);
-                    case 4:
-                        subject.resetFlashcards();
-                    default:
-                        break thisSubject; // break out of loop with this label
+                    switch (option) {
+                        case 1:
+                            addFlashCards(subject);
+                            break;
+                        case 2:
+                            practice(subject);
+                            break;
+                        case 3:
+                            removeFlashCard(subject);
+                            System.out.println("flash card(s) removed!");
+                            break;
+                        case 4:
+                            subject.resetFlashcards();
+                            System.out.println("The scores for this subject have been reset!");
+                            break;
+                        default:
+                            break thisSubject; // break out of loop with this label
+                    }
                 }
-            }
-        } // end user choice if statement
-            
+            } // end user choice if statement
+
         } // end outer menu loop
 
         theUser.saveUserState(); // save user's state before exiting
@@ -191,33 +219,33 @@ public class ProgramDriver {
             }
         }
     }
-    
+
     public static void removeFlashCard(Subject subject) {
         ArrayList<FlashCard> flashcards = subject.getFlashCards();
         int numFlashcards = subject.getNumFlashcards();
         String answer;
         FlashCard flashcard;
-        
+
         // continue asking user to delete flashcards until user types "quit" as answer
         while (numFlashcards > 0) {
-            
+
             for (int i = 0; i < numFlashcards; i++) {
                 flashcard = flashcards.get(i); // cycle through the flashcard array, don't go out-of-bounds
-                
+
                 System.out.println("\n" + flashcard.getQuestion());
                 System.out.print("Do you want to delete this flash card? 'Y' or 'N' ");
                 answer = keyboard.nextLine();
-                
+
                 if (answer.equalsIgnoreCase("Y")) {
                     subject.removeFlashcard(flashcard); // delete this flashcard
                     flashcards.remove(flashcard);
                     numFlashcards = subject.getNumFlashcards();
                     i--;
-                } 
+                }
             }
             System.out.println("Type 'QUIT' to quit or 'again' to keep deleting. ");
-              answer = keyboard.nextLine();
-              if (answer.equalsIgnoreCase("QUIT")) {
+            answer = keyboard.nextLine();
+            if (answer.equalsIgnoreCase("QUIT")) {
                 break; // stop deleting flashcards
             }
         } // end while loop of continuous flash card questions
@@ -243,7 +271,7 @@ public class ProgramDriver {
             System.out.println((index + 2) + ". "
                     + subjects.get(index).getTitle());
         }
-        
+
         System.out.println((index + 2) + ". Quit"); // display quit option
         System.out.print("Enter the number of the option you want: ");
         // adjust for fact that displayed numbers don't match subj. array index
@@ -261,7 +289,7 @@ public class ProgramDriver {
             return null;
         }
     }
-    
+
     public static void deleteSubject(User theUser) {
         int subjectChoice;
         ArrayList<Subject> subjects = theUser.getSubjects(); // user's subjects
@@ -272,18 +300,17 @@ public class ProgramDriver {
             System.out.println((index + 1) + ". "
                     + subjects.get(index).getTitle());
         }
-        
-        System.out.print("Enter the subject number you want to delete or type '0' to quit");
+
+        System.out.print("Enter the subject number you want to delete or type '0' to quit ");
         // adjust for fact that displayed numbers don't match subj. array index
         subjectChoice = Integer.parseInt(keyboard.nextLine()) - 1;
-        
-        
+
         if (subjectChoice < index && subjectChoice > -1) {
-            System.out.println(subjects.get(subjectChoice));
+            System.out.println(subjects.get(subjectChoice).getTitle() + " has been deleted!");
             theUser.deleteSubject(subjects.get(subjectChoice)); // user chose existing subject
-            
-         // user chose to quit, return no subject
-        }  
+
+            // user chose to quit, return no subject
+        }
     }
 
     /**
@@ -307,10 +334,13 @@ public class ProgramDriver {
                 System.out.print("Enter desired password: ");
                 password = keyboard.next();
 
+                // We are not currently ready to use the encrypt functionality
+                //String securePassword = encrypt(password);
                 // check if username taken before user is registered
                 if (User.isDuplicateUser(username)) {
                     System.out.println("Sorry, that username is taken.");
                 } else { // register user
+
                     theUser = new User(username, password);
                     if (theUser.saveUsernameAndPassword()) {
                         System.out.println("Username, password successfuly "
@@ -344,4 +374,93 @@ public class ProgramDriver {
         keyboard.nextLine(); // purge input buffer
         return theUser;
     }
+
+    /**
+     * Creates a dialog window to choose a file from which a new subject will be
+     * created for this user.
+     *
+     * @param theUser the user to add a subject to
+     */
+    public static void readSubjectFromFile(User theUser) {
+        JFileChooser chooser = new JFileChooser(System.getProperty("user.dir")
+                + "/subjectFiles");
+        System.out.println("\nYou may need to minimize windows to see the "
+                + "file chooser.");
+        chooser.setFileFilter(new FileNameExtensionFilter("Text files", "txt"));
+        
+        int result = chooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = chooser.getSelectedFile();
+            Subject subject = Subject.createSubjectFromFile(selectedFile);
+            theUser.addSubject(subject);
+            String fileName = selectedFile.getName();
+            System.out.println("Subject: \"" + subject.getTitle() + "\" "
+                    + "created from " + fileName);
+        } else {
+            System.out.println("You cancelled the file dialog");
+        }
+    }
+
+    //this method takes a string and encrypts it
+    //by using the getSalt() and hash() methods then returns an
+    //encrypted String
+    public static String encrypt(String textToEncrypt) {
+        byte[] salt = getSalt(); //generate salt
+        byte[] hash = hash(textToEncrypt.toCharArray(), salt);
+        String hashString = "";
+        for (int i = 0; i < hash.length; i++) {
+            hashString += (char) hash[i];
+        }
+        return hashString;
+    }
+
+    //this method returns 16 byte random salt value
+    public static byte[] getSalt() {
+        byte[] salt = new byte[16];
+        RANDOM.nextBytes(salt);
+        return salt;
+    }
+
+    //this method returns a hashed and salted password
+    public static byte[] hash(char[] password, byte[] salt) {
+        PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
+        Arrays.fill(password, Character.MIN_VALUE);
+
+        try {
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            return skf.generateSecret(spec).getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new AssertionError("Error while hashing a password: " + e.getMessage(), e);
+        } finally {
+            spec.clearPassword();
+        }
+
+    }
+
+    //this method generates a password 
+    public static String generateSecurePassword(String password, String salt) {
+        String returnValue = null;
+
+        byte[] securePassword = hash(password.toCharArray(), salt.getBytes());
+
+        returnValue = Base64.getEncoder().encodeToString(securePassword);
+
+        return returnValue;
+    }
+
+    //this method verifies users password
+    public static boolean verifyUserPassword(String providedPassword,
+            String securedPassword,
+            String salt) {
+        boolean returnValue = false;
+
+        //generate new secure password with the same salt value
+        String newSecurePassword = generateSecurePassword(providedPassword, salt);
+
+        //check if two passwords are the same
+        returnValue = newSecurePassword.equalsIgnoreCase(securedPassword);
+
+        return returnValue;
+    }
+
 }

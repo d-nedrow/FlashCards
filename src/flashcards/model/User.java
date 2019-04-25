@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 public class User {
 
     private String username, password;
+    private String salt; // not currently using password encrypt. Will later.
     private ArrayList<Subject> subjects;
     private int numSubjects;
 
@@ -31,6 +32,7 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        //this.salt = salt;
         subjects = new ArrayList<>();
     }
 
@@ -50,10 +52,19 @@ public class User {
         subjects.add(subject);
         numSubjects++;
     }
-    
+
     public void deleteSubject(Subject subject) {
         subjects.remove(subject);
         numSubjects--;
+    }
+
+    /**
+     * Returns the given users username.
+     *
+     * @return Username
+     */
+    public String getUsername() {
+        return username;
     }
 
     /**
@@ -64,13 +75,28 @@ public class User {
     }
 
     /**
+     * sets salt
+     */
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    /**
+     * get salt
+     */
+    public String getSalt() {
+        return this.salt;
+    }
+
+    /**
      * Save the user's subjects, flash cards, and right/wrong history to file.
      */
     public void saveUserState() {
         // make a new directory (if it doesn't exist) to hold user save files
-        new File(getPath() + "/userStates").mkdirs();
+        new File(System.getProperty("user.dir") + "/userStates").mkdirs();
 
-        String filename = getPath() + "/userStates/" + username + ".txt";
+        String filename = System.getProperty("user.dir") + "/userStates/" 
+                + username + ".txt";
         PrintWriter output;
         ArrayList<FlashCard> flashcards;
 
@@ -99,7 +125,8 @@ public class User {
      * Load the user's subjects, flash cards, and right/wrong history from file.
      */
     public void loadUserState() {
-        String filename = getPath() + "/userStates/" + username + ".txt";
+        String filename = System.getProperty("user.dir") + "/userStates/" 
+                + username + ".txt";
         File userState = new File(filename);
         Scanner input;
         String inputLine;
@@ -138,7 +165,7 @@ public class User {
      * @return true if username already taken, false otherwise
      */
     public static boolean isDuplicateUser(String potentialUsername) {
-        File userList = new File(getPath() + "/users.txt");
+        File userList = new File("users.txt");
         Scanner input;
         String usernameAndPassword, usernameOnly;
 
@@ -169,7 +196,7 @@ public class User {
      * @return true if successfully saved, false otherwise
      */
     public boolean saveUsernameAndPassword() {
-        File userList = new File(getPath() + "/users.txt");
+        File userList = new File("users.txt");
         PrintWriter output;
         String oldFileContents = "";
 
@@ -198,7 +225,7 @@ public class User {
      * @return User object containing this user's flash cards, subjects, history
      */
     public static User login(String typedUsername, String typedPassword) {
-        File userList = new File(getPath() + "/users.txt");
+        File userList = new File("users.txt");
         String[] usernamePasswordEntry;
         User theUser;
 
@@ -247,15 +274,5 @@ public class User {
         }
 
         return oldFileContents;
-    }
-
-    /**
-     * @return the current working directory, only up to and including project's
-     * root FlashCards folder (e.g. C:/userSpecificDirectory/FlashCards)
-     */
-    public static String getPath() {
-        String path = (System.getProperty("user.dir"));
-        return path.substring(0, path.indexOf("FlashCards")
-                + "FlashCards".length());
     }
 }
