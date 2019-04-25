@@ -57,40 +57,8 @@ public class LoginWindowController implements Initializable {
             if (result.get()== yesBtn) { // register a new user account
                 
                 handleRegistration(event);
-                
-                /*boolean isDuplicate = User.isDuplicateUser(username); // check if duplicate
-                if (isDuplicate) {
-                    System.out.println("An account with this username already exists.");
-                    // do something
-                }
-                else
-                {
-                    User newUser = new User(username, password);                    
-                    newUser.saveUsernameAndPassword(); // add to users.txt
-                    
-                    User userState = User.login(username, password); // contains flash cards, subjects, etc.
-                    
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(getClass().getResource("MainWindow.fxml"));
-                    try {
-                        loader.load();
-                    } catch (IOException ex) {
-                        System.out.println("Oops, something went wrong.");
-                    }
-                    MainWindowController mwc = loader.getController();
-                    mwc.setUser(userState); // pass user object into Main Window
-
-                    Parent P = loader.getRoot();
-                    Stage stage = new Stage();
-                    stage.setScene(new Scene(P));
-                    stage.showAndWait();
-                } */
-                
             }
-            //else if (result.get() == noBtn) { // closes the window
-            //    alert.close();
-            //}
-            else { // cancel
+            else {
                 alert.close();
             }
         }
@@ -109,7 +77,7 @@ public class LoginWindowController implements Initializable {
                 mwc.setUser(user);
                 
                 stage.show();
-                // hide Login Window
+                // TODO: hide Login Window
                 
             } catch (IOException ex) {
                 Logger.getLogger(LoginWindowController.class.getName()).log(Level.SEVERE, null, ex);
