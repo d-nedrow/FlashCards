@@ -61,17 +61,6 @@ public class User {
         subjects.remove(subject);
         numSubjects--;
     }
-    
-    public void deleteSubject(String subjectTitle) {
-        for(Subject i: subjects)
-        {
-            if(i.getTitle() == subjectTitle)
-            {
-                subjects.remove(i);
-                numSubjects--;
-            }
-        }
-    }
 
     /**
      * Returns the given users username.
