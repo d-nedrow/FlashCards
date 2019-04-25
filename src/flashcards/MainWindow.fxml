@@ -12,11 +12,10 @@
    <children>
       <Label fx:id="welcomeLabel" layoutX="96.0" layoutY="30.0" text="Welcome, User!" />
       <Label layoutX="96.0" layoutY="66.0" text="Select a Subject" />
-      <Button alignment="CENTER" layoutX="72.0" layoutY="593.0" mnemonicParsing="false" onAction="#createNewSubjectBtn" prefHeight="31.0" prefWidth="152.0" text="Add Subject" />
+      <Button alignment="CENTER" layoutX="73.0" layoutY="582.0" mnemonicParsing="false" onAction="#createNewSubjectBtn" prefHeight="31.0" prefWidth="152.0" text="Add Subject" />
       <Separator layoutX="309.0" layoutY="41.0" orientation="VERTICAL" prefHeight="632.0" prefWidth="6.0" />
       <ListView fx:id="listView" layoutX="49.0" layoutY="101.0" prefHeight="428.0" prefWidth="200.0" />
       <Button alignment="CENTER" layoutX="72.0" layoutY="544.0" mnemonicParsing="false" onAction="#addFlashCardBtn" prefHeight="31.0" prefWidth="152.0" text="Add FlashCard" />
-      <Button alignment="CENTER" layoutX="72.0" layoutY="642.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="152.0" text="Reset FlashCards" />
       <BorderPane fx:id="flashcardPane" layoutX="344.0" layoutY="31.0" prefHeight="658.0" prefWidth="581.0">
          <left>
             <Button alignment="CENTER" mnemonicParsing="false" onAction="#prevCardBtn" prefHeight="31.0" prefWidth="76.0" text="Previous" BorderPane.alignment="CENTER" />
@@ -45,7 +44,17 @@
             </VBox>
          </bottom>
          <center>
-            <VBox fx:id="flashcardDisplayBox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+            <VBox fx:id="flashcardDisplayBox" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="Label" />
+                  <TextField alignment="CENTER" prefHeight="31.0" prefWidth="357.0" />
+                  <Button mnemonicParsing="false" text="Check Answer" />
+               </children>
+               <padding>
+                  <Insets left="40.0" right="40.0" top="10.0" />
+               </padding></VBox>
          </center></BorderPane>
+      <Button alignment="CENTER" contentDisplay="CENTER" layoutX="73.0" layoutY="620.0" mnemonicParsing="false" onAction="#removeSubjectBtn" prefHeight="31.0" prefWidth="152.0" text="Remove Subject" />
+      <Button alignment="CENTER" contentDisplay="CENTER" layoutX="72.0" layoutY="658.0" mnemonicParsing="false" onAction="#resetFlashcardsBtn" prefHeight="31.0" prefWidth="152.0" text="Reset FlashCards" />
    </children>
 </AnchorPane>

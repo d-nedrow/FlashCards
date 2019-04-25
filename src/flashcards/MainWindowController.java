@@ -87,6 +87,33 @@ public class MainWindowController implements Initializable {
     }
     
     @FXML
+    private void removeSubjectBtn(ActionEvent event)
+    {
+        for(Subject subj: user.getSubjects())
+        {
+            if (subj.getTitle().equals(curSubject)) 
+            {
+                user.deleteSubject(subj);
+                break;
+            }
+        }
+        
+        user.saveUserState();
+        populateListView();
+    }
+    
+    @FXML
+    private void resetFlashcardsBtn(ActionEvent event)
+    {
+        for(Subject subj: user.getSubjects())
+        {
+            subj.resetFlashcards();
+        }
+        user.saveUserState();
+        displayCards();
+    }
+    
+    @FXML
     private void addFlashCardBtn(ActionEvent event) // BUG - if more than 2x3, adds to wrong subject
     {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
@@ -134,8 +161,6 @@ public class MainWindowController implements Initializable {
         
         user.saveUserState(); // add flash card to file
         displayCards();
-        //clearCards(); // will not change the display
-        //populateFlashCards();
     }
     /**
      * Removes a flashcard from the list.
@@ -288,6 +313,8 @@ public class MainWindowController implements Initializable {
         displayFlashCardInfo(card);
         VBox.setMargin(question, new Insets(0, 0, 70, 0));
         flashcardDisplayBox.getChildren().addAll(question, answer, checkBtn);
+        user.saveUserState();
+        
         return flashcardDisplayBox;
     }
     
@@ -296,24 +323,11 @@ public class MainWindowController implements Initializable {
         totAttemptLabel.setText("Total Attempts: " + card.getNumAttempts());
         corAttemptLabel.setText("Correct Attempts: " + card.getNumCorrect());
         incAttemptLabel.setText("Incorrect Attempts: " + card.getNumIncorrect());
-        
-        /*if (card == null) 
-        {
-            cardInfoLabel.setText("No flashcard in focus.");
-        }
-        else
-        { */
-            /*int nAttempts = card.getNumAttempts();
-            int cAttempts = card.getNumCorrect();
-            int iAttempts = card.getNumIncorrect();
-            cardInfoLabel.setText("Total Attempts: " + nAttempts + "\nCorrect Attempts: " + cAttempts
-                    + "\nIncorrect Attempts: " + iAttempts); */
-        //}
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) { // basically a constructor
-        System.out.println("The MWC is being initialized...");
+    public void initialize(URL url, ResourceBundle rb) 
+    {
         listView.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<String>() 
                 {
@@ -329,6 +343,5 @@ public class MainWindowController implements Initializable {
                             //displayFlashCardInfo(null);
                         }
                 });
-        System.out.println("MWC done.");
-    }  
+    }
 }
