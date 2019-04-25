@@ -5,6 +5,8 @@
  */
 package flashcards;
 
+import static flashcards.drivers.ProgramDriver.generateSecurePassword;
+import static flashcards.drivers.ProgramDriver.getSalt;
 import flashcards.model.User;
 import java.io.IOException;
 import java.net.URL;
@@ -131,6 +133,14 @@ public class LoginWindowController implements Initializable {
         }
         else {
             User newUser = new User(username, password);
+            
+            // I added this code from Sabrina to make registering users on the GUI compatible
+            // with the new password encryption functionality. (D. Nedrow)
+            byte[] salt = getSalt();
+            String encryptedPassword = generateSecurePassword(password, salt.toString());
+            newUser.setSalt(salt.toString());
+            newUser.setEncryptedPassword(encryptedPassword);
+            
             newUser.saveUsernameAndPassword(); // add to users.txt
             newUser.saveUserState(); // populate user information
             

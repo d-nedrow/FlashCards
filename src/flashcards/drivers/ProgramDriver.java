@@ -481,9 +481,9 @@ public class ProgramDriver {
                 //String securePassword = encrypt(password);
                 
                 byte[] salt = getSalt();
-                System.out.println("salt: " + salt);
+                //System.out.println("salt: " + salt); (testing code)
                 String encryptedPassword = generateSecurePassword(password, salt.toString());
-                System.out.println("secure password: " + encryptedPassword);
+                //System.out.println("secure password: " + encryptedPassword); (testing code)
 
                 // check if username taken before user is registered
                 if (User.isDuplicateUser(username)) {
