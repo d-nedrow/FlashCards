@@ -1,0 +1,51 @@
+State Capitals
+Capital of Alabama? @DL Montgomery
+Capital of Alaska? @DL Juneau
+Capital of Arizona? @DL Phoenix
+Capital of Arkansas? @DL Little Rock
+Capital of California? @DL Sacramento
+Capital of Colorado? @DL Denver
+Capital of Connecticut? @DL Hartford
+Capital of Delaware? @DL Dover
+Capital of Florida? @DL Tallahassee
+Capital of Georgia? @DL Atlanta
+Capital of Hawaii? @DL Honolulu
+Capital of Idaho? @DL Boise
+Capital of Illinois? @DL Springfield
+Capital of Indiana? @DL Indianapolis
+Capital of Iowa? @DL Des Moines
+Capital of Kansas? @DL Topeka
+Capital of Kentucky? @DL Frankfort
+Capital of Louisiana? @DL Baton Rouge
+Capital of Maine? @DL Augusta
+Capital of Maryland? @DL Annapolis
+Capital of Massachusetts? @DL Boston
+Capital of Michigan? @DL Lansing
+Capital of Minnesota? @DL St. Paul
+Capital of Mississippi? @DL Jackson
+Capital of Missouri? @DL Jefferson City
+Capital of Montana? @DL Helena
+Capital of Nebraska? @DL Lincoln
+Capital of Nevada? @DL Carson City
+Capital of New Hampshire? @DL Concord
+Capital of New Jersey? @DL Trenton
+Capital of New Mexico? @DL Santa Fe
+Capital of New York? @DL Albany
+Capital of North Carolina? @DL Raleigh
+Capital of North Dakota? @DL Bismarck
+Capital of Ohio? @DL Columbus
+Capital of Oklahoma? @DL Oklahoma City
+Capital of Oregon? @DL Salem
+Capital of Pennsylvania? @DL Harrisburg
+Capital of Rhode Island? @DL Providence
+Capital of South Carolina? @DL Columbia
+Capital of South Dakota? @DL Pierre
+Capital of Tennessee? @DL Nashville
+Capital of Texas? @DL Austin
+Capital of Utah? @DL Salt Lake City
+Capital of Vermont? @DL Montpelier
+Capital of Virginia? @DL Richmond
+Capital of Washington? @DL Olympia
+Capital of West Virginia? @DL Charleston
+Capital of Wisconsin? @DL Madison
+Capital of Wyoming? @DL Cheyenne
