@@ -1,0 +1,31 @@
+Subject: Math
+2*2 @DL 4 @DL 5 @DL 5 @DL 0 @DL 1 1 1 1 1 
+15/3 @DL 5 @DL 3 @DL 3 @DL 0 @DL 1 1 1 0 0 
+1+54 @DL 55 @DL 3 @DL 3 @DL 0 @DL 1 1 1 0 0 
+23-3 @DL 20 @DL 2 @DL 2 @DL 0 @DL 1 1 0 0 0 
+35+3 @DL 38 @DL 3 @DL 3 @DL 0 @DL 1 1 1 0 0 
+Subject: Star Wars
+In the Phantom Menace who is the sith lord? @DL Darth Maul @DL 1 @DL 1 @DL 0 @DL 1 0 0 0 0 
+Name of Han Solo's Ship? @DL Millennium Falcon @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Color of Yoda's lightsaber @DL green @DL 1 @DL 1 @DL 0 @DL 1 0 0 0 0 
+What bounty hunter gets Han Solo @DL Boba Fett @DL 1 @DL 1 @DL 0 @DL 1 0 0 0 0 
+Who is Luke Skywalker's twin sister? @DL Princess Leia @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Subject: Game of Thrones
+Name of Jon's direwolf @DL Ghost @DL 1 @DL 1 @DL 0 @DL 1 0 0 0 0 
+King of Westeros when the show starts @DL Robert Baratheon @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Where are the seven kingdoms located @DL Westeros @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+What is the name of Arya Stark's sword? @DL Needle @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Daenerys Targaryen had how many dragons @DL 3 @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Subject: NFL Teams
+Pittsburgh __________ @DL Steelers @DL 1 @DL 1 @DL 0 @DL 1 0 0 0 0 
+Kansas City ___________ @DL Chiefs @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Cincinnati _______ @DL Bengals @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Cleveland ______ @DL Browns @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Green Bay _______ @DL Packers @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Subject: NCAA Teams
+Michigan __________ @DL Wolverines @DL 1 @DL 1 @DL 0 @DL 1 0 0 0 0 
+Ohio State ________ @DL Buckeyes @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Oregon _____ @DL Ducks @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Wisconsin ________ @DL Badgers @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+Cincinnati ________ @DL Bearcats @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
+USC _______ @DL Trojans @DL 0 @DL 0 @DL 0 @DL 0 0 0 0 0 
