@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="480.0" prefWidth="600.0" style="-fx-background-color: #eaebed;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="flashcards.LoginWindowController">
+   <children>
+      <Label layoutX="221.0" layoutY="97.0" text="Please Login or Register" >
+          <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <TextField id="userField" fx:id="userField" layoutX="193.0" layoutY="199.0" prefHeight="31.0" prefWidth="215.0" />
+      <Label layoutX="267.0" layoutY="169.0" text="Username" >
+           <font>
+            <Font size="20.0" />
+           </font>
+      </Label>
+      <TextField id="passField" fx:id="passField" layoutX="193.0" layoutY="288.0" prefHeight="31.0" prefWidth="215.0" />
+      <Label layoutX="269.0" layoutY="257.0" text="Password" >
+           <font>
+            <Font size="20.0" />
+           </font>
+      </Label>
+      <Button layoutX="137.0" layoutY="375.0" mnemonicParsing="false" onAction="#handleLogin" prefHeight="31.0" prefWidth="92.0" text="Login" />
+      <Button layoutX="380.0" layoutY="375.0" mnemonicParsing="false" onAction="#handleRegistration" prefHeight="31.0" prefWidth="92.0" text="Register" />
+      <Label layoutX="246.0" layoutY="32.0" text="Flashcards">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Label>
+      <Separator layoutX="151.0" layoutY="128.0" prefHeight="10.0" prefWidth="300.0" />
+   </children>
+</AnchorPane>
